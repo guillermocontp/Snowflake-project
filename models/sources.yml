@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+    - name: F1_rawdata
+      description: Raw data taken from Kaggle and FastF1
+      database: F1_DB
+      schema: RAW
+      tables:
+          - name: circuits
+            description: Circuits where F1 races are held
+          - name: drivers
+            description: drivers in F1 
+          - name: lap_times
+            description: lap times in F1
+          - name: races
+            description: races in F1
+          - name: raw_lap_times_json_staging
+            description: lap_times per circuit and driver in JSON
+          - name: results
+            description: results of F1 races per driver and year
+          - name: status
+            description: contains mapping of various statuses
+          - name: tyres
+            description: describes tyre life and type througout races 
+          - name: weather_20_24
+            description: weather data
+          - name: weather_cities
+            description: cities where races have been held for weather data 
