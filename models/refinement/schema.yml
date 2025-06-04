@@ -1,0 +1,25 @@
+version: 2
+
+models:
+    - name: _weather
+      description: "Weatehr data for all the races 2020-2024"
+      columns:
+          - name: raceid
+            description: "The primary key for this table"
+            tests:
+                - unique
+                - not_null
+
+    - name: _tyres
+      description: "Tyres data for all the races and drivers 2020-2024"
+      columns:
+          - name: raceid
+            description: "One of the primary key for this table"
+            tests:
+                - unique
+                - not_null
+          - name: driverid
+            description: "One of the primary key for this table"
+            tests:
+                - unique
+                - not_null

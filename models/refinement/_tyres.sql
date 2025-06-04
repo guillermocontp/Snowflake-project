@@ -8,6 +8,6 @@ FROM {{ ref('_tyres_only') }} AS t
 --only "active" drivers have their numebrs
     LEFT JOIN {{ source('F1_rawdata', 'races') }} AS r
     ON t.year = r.year AND 
-        t.roundnumber = r.round
+       t.roundnumber = r.round
 WHERE d.number IS NOT NULL
 GROUP BY ALL

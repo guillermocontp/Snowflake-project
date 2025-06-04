@@ -2,20 +2,37 @@
 version: 2
 
 models:
-    - name: my_first_dbt_model
-      description: "A starter dbt model"
+    - name: _weather_cities
+      description: "Weatehr data from Snowflake marketplace from LLC: frostbyte"
       columns:
-          - name: id
+          - name: city
             description: "The primary key for this table"
             tests:
                 - unique
                 - not_null
 
-    - name: my_second_dbt_model
-      description: "A starter dbt model"
+    - name: _weather_20_24
+      description: "Weather data for all races 2020-2024 from FastF1 API"
       columns:
-          - name: id
-            description: "The primary key for this table"
+          - name: roundnumber
+            description: "One of the primary key for this table"
             tests:
                 - unique
+                - not_null
+          - name: year
+            description: "One of the primary key for this table"
+            tests:
+                - not_null
+    
+    - name: _tyres_only
+      description: "Tyers data for all races 2020-2024 from FastF1 API"
+      columns:
+          - name: roundnumber
+            description: "One of the primary key for this table"
+            tests:
+                - unique
+                - not_null
+          - name: year
+            description: "One of the primary key for this table"
+            tests:
                 - not_null
