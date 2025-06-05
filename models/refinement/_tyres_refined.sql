@@ -10,4 +10,4 @@ FROM {{ ref('_tyres_only') }} AS t
     ON t.year = r.year AND 
        t.roundnumber = r.round
 WHERE d.number IS NOT NULL
-GROUP BY ALL
+GROUP BY ALL   
