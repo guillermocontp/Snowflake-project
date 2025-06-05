@@ -40,4 +40,36 @@ models:
       - name: status 
         description: full mapping on statuses from finished, disqualified, accident, etc.
       
+  - name: weather_refined
+    description: "Weather data for all the races 2020-2024" # Corrected "Weatehr"
+    columns:
+      - name: raceid
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: tyres_refined
+    description: "Tyres data for all the races and drivers 2020-2024"
+    columns:
+      - name: raceid
+        description: "Part of the composite primary key for this table"
+        # If 'raceid' alone isn't unique, the 'unique' test here will fail.
+        # Consider removing it or using a composite key test at the model level.
+        tests:
+          # - unique # Likely remove this if it's part of a composite key
+          - not_null
+      - name: driverid
+        description: "Part of the composite primary key for this table"
+        # If 'driverid' alone isn't unique, the 'unique' test here will fail.
+        # Consider removing it or using a composite key test at the model level.
+        tests:
+          # - unique # Likely remove this if it's part of a composite key
+          - not_null
+    # Example for testing a composite primary key (raceid, driverid)
+    # tests:
+    #   - dbt_utils.unique_combination_of_columns:
+    #       combination_of_columns:
+    #         - raceid
+    #         - driverid
       
