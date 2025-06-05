@@ -41,8 +41,5 @@ models:
     staging:
       +materialized: view
     refinement:
-<<<<<<< main
       +materialized: table
-=======
-      +materialized: table
->>>>>>> main
+
