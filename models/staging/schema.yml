@@ -35,11 +35,49 @@ models:
     columns:
       - name: race_id # Example: Replace with actual primary key column name
         description: "The unique identifier for each race."
-       
+        # Add tests here if needed, e.g.:
+        # tests:
+        #   - unique
+        #   - not_null
 
   - name: results_stg
     description: "Staging model for race results data. Contains the final results for each driver in each race."
     columns:
       - name: result_id # Example: Replace with actual primary key column name
         description: "The unique identifier for each race result entry."
-       
+        # Add tests here if needed
+
+  - name: _weather_cities_stg # Note: dbt model names typically don't start with underscores, but it's allowed.
+    description: "Weather data from Snowflake marketplace from LLC: frostbyte" # Corrected "Weatehr"
+    columns:
+      - name: city
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: _weather_20_24_stg # Note on underscore prefix
+    description: "Weather data for all races 2020-2024 from FastF1 API"
+    columns:
+      - name: roundnumber
+        description: "One of the primary key for this table"
+        tests:
+          - unique # If 'roundnumber' alone isn't unique, consider a composite key test or remove this 'unique'
+          - not_null
+      - name: year
+        description: "One of the primary key for this table"
+        tests:
+          - not_null
+
+  - name: _tyres_only_stg # Note on underscore prefix
+    description: "Tyres data for all races 2020-2024 from FastF1 API" # Corrected "Tyers"
+    columns:
+      - name: roundnumber
+        description: "One of the primary key for this table"
+        tests:
+          - unique # If 'roundnumber' alone isn't unique, consider a composite key test or remove this 'unique'
+          - not_null
+      - name: year
+        description: "One of the primary key for this table"
+        tests:
+          - not_null
