@@ -1,7 +1,7 @@
 version: 2
 
 models:
-    - name: _weather
+    - name: _weather_refined
       description: "Weatehr data for all the races 2020-2024"
       columns:
           - name: raceid
@@ -10,7 +10,7 @@ models:
                 - unique
                 - not_null
 
-    - name: _tyres
+    - name: _tyres_refined
       description: "Tyres data for all the races and drivers 2020-2024"
       columns:
           - name: raceid
