@@ -1,6 +1,7 @@
 version: 2
 
 models:
+<<<<<<< main
     - name: _weather_refined
       description: "Weatehr data for all the races 2020-2024"
       columns:
@@ -23,3 +24,45 @@ models:
             tests:
                 - unique
                 - not_null
+=======
+  - name: circuits_refined
+    description: "Refined circuits data, typically cleaned, transformed, and potentially enriched from the staging layer."
+    columns:
+      - name: circuit_id # Example: Should be the primary key for this refined model
+        description: "The unique identifier for each circuit in the refined dataset."
+        
+
+  - name: drivers_refined
+    description: "Refined drivers data, with potential cleaning, type conversions, and enrichments."
+    columns:
+      - name: driver_id # Example: Should be the primary key
+        description: "The unique identifier for each driver in the refined dataset."
+      
+
+  - name: lap_times_refined
+    description: "Refined lap times data, possibly aggregated, joined with driver/race details, or with calculated metrics."
+    columns:
+      - name: refined_lap_time_pk # Example: Replace with actual PK, could be composite
+        description: "The primary key for the refined lap times. This might be a new surrogate key or a combination of existing keys."
+      
+   
+  - name: races_refined
+    description: "Refined races data, potentially joined with circuit details, weather information, or session times."
+    columns:
+      - name: race_id # Example: Should be the primary key
+        description: "The unique identifier for each race in the refined dataset."
+    
+      - name: race_full_date # Example of a transformed column
+        description: "Full date of the race, potentially combining year, round, and date fields."
+     
+  - name: results_refined
+    description: "Refined race results, adding status column"
+    columns:
+      - name: refined_result_pk # Example: Replace with actual PK, could be composite
+        description: "The primary key for the refined results. This might be a new surrogate key or a combination of existing keys."
+   
+      - name: status 
+        description: full mapping on statuses from finished, disqualified, accident, etc.
+      
+      
+>>>>>>> main
