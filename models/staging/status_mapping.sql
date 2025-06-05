@@ -1,0 +1,1 @@
+Select * from {{ source('F1_rawdata', 'status') }}

@@ -1,0 +1,1 @@
+SELECT * FROM {{ ref('lap_times_stg') }}
