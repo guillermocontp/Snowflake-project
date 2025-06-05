@@ -42,3 +42,4 @@ models:
       +materialized: view
     refinement:
       +materialized: table
+
