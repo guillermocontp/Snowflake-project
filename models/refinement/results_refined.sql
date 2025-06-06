@@ -5,3 +5,6 @@ JOIN
     {{ ref('status_mapping') }} AS st
 ON
     res.StatusID = st.StatusID 
+WHERE
+    races.YEAR BETWEEN 2020 AND 2025
+    AND r.POSITION IN (1, 2, 3);
