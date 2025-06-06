@@ -39,8 +39,8 @@ The initial phase of the pipeline focuses on acquiring raw data from various sou
     * **Format:** CSV files and tables from Marketplace
 * **Extraction Method:**
     * CSV files were uploaded from a stage using snowsight UI.
-    * JSON data was originally CSV and then changed to JSON using python [code here]().
-    * FastF1 library used within Python scripts to fetch specific data, [code here]().
+    * JSON data was originally CSV and then changed to JSON using python [code here](additional%20code/load_json.sql).
+    * FastF1 library used within Python scripts to fetch specific data, [code here](additional%20code/load_json.sql).
     * Snowflake Marketplace data accessed directly via shared databases.
 
 ## 3. Snowflake Database Setup
