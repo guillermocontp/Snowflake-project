@@ -1,0 +1,47 @@
+-- setting session parameters
+USE ROLE DASHBOARD_ROLE;
+USE DATABASE F1_DB;
+USE SCHEMA DELIVERY;
+
+-- driver performance
+SELECT 
+    WINNER_NAME,
+    COUNT(WINNER_NAME) AS WIN_COUNT
+FROM
+    DASHBOARD
+WHERE
+    NAME = 'British Grand Prix'
+GROUP BY
+    WINNER_NAME
+ORDER BY
+    WIN_COUNT DESC;
+
+-- weather conditions 
+SELECT
+    YEAR,
+    AIRTEMP,
+    HUMIDITY,
+    PRESSURE,
+    RAINFALL,
+    TRACKTEMP,
+    WINDDIRECTION,
+    WINDSPEED
+FROM 
+    F1_DB.DELIVERY.DASHBOARD
+WHERE
+    NAME = 'British Grand Prix'
+ORDER BY 
+    YEAR DESC;
+
+-- lap time comparison 
+SELECT
+    YEAR,
+    YEAR || ' ' || NAME AS RACE,
+    RACE_AVG_LAP_TIME_MINUTES AS AVG_LAP_TIME,
+    WINNER_AVG_LAP_TIME_MINUTES AS AVG_WINNER_LAP_TIME
+FROM 
+    F1_DB.DELIVERY.DASHBOARD
+WHERE
+    NAME = 'British Grand Prix'
+ORDER BY 
+    YEAR DESC;
