@@ -55,53 +55,60 @@ The `F1_DB` database is organized into three distinct schemas, representing the 
 
 
 ```mermaid
-graph TB
+graph TD
     subgraph SNOWFLAKE["❄️ SNOWFLAKE CLOUD PLATFORM"]
+        direction TB
+        
+        subgraph SOURCES["📊 Data Sources"]
+            CSV["📄 CSV Files"]
+            JSON["📋 JSON Files"]
+            MARKET["🏪 Snowflake Marketplace"]
+        end
+        
         subgraph F1_DB["🗃️ F1_DB Database"]
             direction TB
             
-            subgraph SOURCES["📊 Data Sources"]
-                CSV["📄 CSV Files<br/>"]
-                JSON["📋 JSON Files<br/>"]
-                MARKET["🏪 Snowflake<br/>Marketplace"]
+            subgraph STAGING["🚪 RAW SCHEMA"]
+                
             end
             
-            subgraph STAGING["🚪 RAW SCHEMA - Staging Layer"]
-                RAW_TABLES["📁 Raw Tables<br/>"]
+            subgraph REFINEMENT["⚙️ REFINEMENT SCHEMA"]
+                
             end
             
-            subgraph REFINEMENT["⚙️ REFINEMENT SCHEMA - Processing Layer"]
-                REFINED_TABLES["🔧 Processed Tables<br/>"]
+            subgraph DELIVERY["📈 DELIVERY SCHEMA"]
+                
             end
-            
-            subgraph DELIVERY["📈 DELIVERY SCHEMA - Analytics Layer"]
-                FINAL_TABLES["📊 Fact tables<br/>• race_analytics<br/>"]
-            end
-            
-            CSV --> STAGING
-            JSON --> STAGING
-            MARKET --> STAGING
-            
-            STAGING --> REFINEMENT
-            REFINEMENT --> DELIVERY
         end
         
         subgraph APPS["🖥️ Applications"]
-            STREAMLIT["🎯 Streamlit<br/>Dashboard"]
-            SNOWSIGHT["👁️ Snowsight<br/>Dashboards"]
+            direction LR
+            STREAMLIT["🎯 Streamlit Dashboard"]
+            SNOWSIGHT["👁️ Snowsight Dashboards"]
         end
+        
+        %% Data flow arrows
+        CSV --> STAGING
+        JSON --> STAGING
+        MARKET --> STAGING
+        
+        STAGING --> REFINEMENT
+        REFINEMENT --> DELIVERY
         
         DELIVERY --> STREAMLIT
         DELIVERY --> SNOWSIGHT
     end
     
+    %% External tools positioned below
     subgraph TOOLS["🛠️ Development Tools"]
-        DBT["🔨 dbt<br/>(Data Build Tool)"]
-        GITHUB["🐙 GitHub<br/>(Version Control)"]
+        direction LR
+        DBT["🔨 dbt"]
+        GITHUB["🐙 GitHub"]
     end
     
-    DBT -.-> REFINEMENT
+    %% Tool connections
     DBT -.-> STAGING
+    DBT -.-> REFINEMENT
     DBT -.-> DELIVERY
     GITHUB -.-> DBT
     
