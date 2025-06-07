@@ -3,12 +3,12 @@ SELECT DISTINCT
     tyres.eventname,
     tyres.stint,
     tyres.driver,
-    tyres.driverid,
-    results.driverid,
+    tyres.driverid tyres_driver,
+    results.driverid results_driver,
     results.position,
     tyres.compound,
     tyres.tyrelaps
-FROM tyres_refined AS tyres
-    INNER JOIN results_refined AS results
+FROM {{ ref('_tyres_refined') }} AS tyres
+    INNER JOIN {{ ref('results_refined') }} AS results
     ON tyres.driverid = results.driverid AND
-    tyres.raceid = results.raceid;
+    tyres.raceid = results.raceid

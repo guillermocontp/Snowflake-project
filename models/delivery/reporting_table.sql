@@ -1,9 +1,5 @@
--- setting the context for the session
-USE ROLE GRIZZLY_ROLE;
-USE DATABASE F1_DB;
 
--- creating the DASHBOARD table in the DELIVERY schema
-CREATE OR REPLACE TABLE F1_DB.DELIVERY.DASHBOARD AS
+
 
 -- getting the most common tyre compound for each driver
 WITH driver_most_common_compound AS (
@@ -12,7 +8,7 @@ WITH driver_most_common_compound AS (
         DRIVERID,
         MODE(COMPOUND) AS most_common_compound
     FROM
-        F1_DB.REFINEMENT.TYRES_REFINED
+        {{ ref('_tyres_refined') }}
     GROUP BY
         RACEID,
         DRIVERID
@@ -23,7 +19,7 @@ fastest_lap_times AS (
         RACEID_KEY,
         MIN((3600*HOUR(TIME) + 60*MINUTE(TIME) + SECOND(TIME))/60) AS fastest_lap_time_minutes
     FROM
-        F1_DB.REFINEMENT.LAP_TIMES_REFINED
+        {{ ref('lap_times_refined') }}
     GROUP BY
         RACEID_KEY
 ),
@@ -33,7 +29,7 @@ average_lap_times AS (
         RACEID_KEY,
         AVG((3600*HOUR(TIME) + 60*MINUTE(TIME) + SECOND(TIME))/60) AS avg_lap_time_minutes
     FROM
-        F1_DB.REFINEMENT.LAP_TIMES_REFINED
+        {{ ref('lap_times_refined') }}
     GROUP BY
         RACEID_KEY
 )
@@ -56,20 +52,20 @@ SELECT
     ROUND(flt.fastest_lap_time_minutes, 4) AS RACE_FASTEST_LAP_MINUTES,
     ROUND(alt.avg_lap_time_minutes, 4) AS RACE_AVG_LAP_TIME_MINUTES
 FROM
-    F1_DB.REFINEMENT.RACES_REFINED r
+    {{ ref('races_refined') }} r
 -- joining tables to get the required columns
 JOIN
-    F1_DB.REFINEMENT.CURCUITS_REFINED c ON r.CIRCUITID = c.CIRCUITID
+    {{ ref('circuits_refined') }} c ON r.CIRCUITID = c.CIRCUITID
 JOIN
-    F1_DB.REFINEMENT.WEATHER_REFINED w ON r.RACEID = w.RACEID
+    {{ ref('_weather_refined') }} w ON r.RACEID = w.RACEID
 JOIN
-    F1_DB.REFINEMENT.RESULTS_REFINED rr ON r.RACEID = rr.RACEID
+    {{ ref('results_refined') }}  rr ON r.RACEID = rr.RACEID
 JOIN
-    F1_DB.REFINEMENT.DRIVERS_REFINED d ON rr.DRIVERID = d.DRIVERID
+    {{ ref('drivers_refined') }} d ON rr.DRIVERID = d.DRIVERID
 LEFT JOIN
     driver_most_common_compound mcc ON r.RACEID = mcc.RACEID AND rr.DRIVERID = mcc.DRIVERID
 LEFT JOIN
     fastest_lap_times flt ON CAST(r.RACEID AS VARCHAR) = flt.RACEID_KEY
 LEFT JOIN
     average_lap_times alt ON CAST(r.RACEID AS VARCHAR) = alt.RACEID_KEY
-WHERE rr.POSITION = 1;
+WHERE rr.POSITION = 1

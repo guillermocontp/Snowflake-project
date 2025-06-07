@@ -42,4 +42,6 @@ models:
       +materialized: view
     refinement:
       +materialized: table
+    delivery: 
+      +materialized: table
 
