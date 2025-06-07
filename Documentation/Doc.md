@@ -40,7 +40,7 @@ The initial phase of the pipeline focuses on acquiring raw data from various sou
 * **Extraction Method:**
     * CSV files were uploaded from a stage using snowsight UI.
     * JSON data was originally CSV and then changed to JSON using python [code here](/Additional%20code/load_json.sql).
-    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/load_json.sql).
+    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/load_json.sql).[EWA to add this script]
     * Snowflake Marketplace data accessed directly via shared databases.
 
 ## 3. Snowflake Database Setup
@@ -52,6 +52,18 @@ A new database named `F1_DB` was created to house all data, schemas, and objects
 
 ### 3.2. Schema Architecture (Data Layers)
 The `F1_DB` database is organized into three distinct schemas, representing the different stages of the data lifecycle:
+
+graph TD
+    subgraph F1_DB [F1_DB Database]
+        direction LR
+        A[RAW Schema<br/>(Staging Layer)] --> B(REFINEMENT Schema<br/>(Refinement Layer))
+        B --> C{DELIVERY Schema<br/>(Delivery Layer)}
+    end
+    %% Styling
+    style F1_DB fill:#f0f7ff,stroke:#0055cc,stroke-width:2px,stroke-dasharray: 5 5
+    style A fill:#e6f3ff,stroke:#004bad
+    style B fill:#d0e7ff,stroke:#004bad
+    style C fill:#b9daff,stroke:#004bad
 
 * **`STAGING` Schema (Staging Layer):**
     * **Purpose:** This layer serves as the initial landing zone for all raw data extracted from the source systems. Data here is typically a direct copy or minimally processed version of the source data.
