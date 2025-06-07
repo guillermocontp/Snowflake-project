@@ -14,4 +14,4 @@ WHERE
         -- only include drivers that appear in RESULTS_REFINED
         SELECT 1 FROM REFINEMENT.RESULTS_REFINED rr 
         WHERE lt.DRIVERID = rr.DRIVERID
-    );
+    )

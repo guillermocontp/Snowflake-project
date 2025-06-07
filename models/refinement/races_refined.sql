@@ -1,3 +1,3 @@
 SELECT * FROM {{ ref('races_stg') }}
 WHERE
-    YEAR BETWEEN 2020 AND 2025;
+    YEAR BETWEEN 2020 AND 2025

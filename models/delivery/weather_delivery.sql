@@ -8,5 +8,5 @@ SELECT
     MAX(CASE WHEN rainfall = TRUE THEN 1 ELSE 0 END) AS rained,
     AVG(windspeed) AS windspeed
     
-FROM weather_refined
-GROUP BY ALL;
+FROM {{ ref('_weather_refined') }}
+GROUP BY ALL
