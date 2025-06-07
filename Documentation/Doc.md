@@ -55,10 +55,10 @@ The `F1_DB` database is organized into three distinct schemas, representing the 
 
 ```mermaid
 graph TD
-    subgraph F1_DB [F1_DB Database]
+    subgraph F1_DB ["F1_DB Database"]
         direction LR
-        A[RAW Schema<br/>(Staging Layer)] --> B(REFINEMENT Schema<br/>(Refinement Layer))
-        B --> C{DELIVERY Schema<br/>(Delivery Layer)}
+        A["RAW Schema (Staging Layer)"] --> B["REFINEMENT Schema (Refinement Layer)"]
+        B --> C["DELIVERY Schema (Delivery Layer)"]
     end
     %% Styling
     style F1_DB fill:#f0f7ff,stroke:#0055cc,stroke-width:2px,stroke-dasharray: 5 5
