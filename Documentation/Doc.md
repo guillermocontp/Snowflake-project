@@ -55,76 +55,50 @@ The `F1_DB` database is organized into three distinct schemas, representing the 
 
 
 ```mermaid
-graph TD
-    subgraph SNOWFLAKE["❄️ SNOWFLAKE CLOUD PLATFORM"]
-        direction TB
+flowchart TD
+    %% Data Sources
+    CSV["📄 CSV Files"]
+    JSON["📋 JSON Files"]
+    MARKET["🏪 Snowflake Marketplace"]
+    
+    %% Database Layers
+    subgraph F1_DB ["🗃️ F1_DB Database"]
+        RAW["🚪 RAW SCHEMA<br/>Staging Layer"]
+        REFINEMENT["⚙️ REFINEMENT SCHEMA<br/>Processing Layer"]
+        DELIVERY["📈 DELIVERY SCHEMA<br/>Analytics Layer"]
         
-        subgraph SOURCES["📊 Data Sources"]
-            CSV["📄 CSV Files"]
-            JSON["📋 JSON Files"]
-            MARKET["🏪 Snowflake Marketplace"]
-        end
-        
-        subgraph F1_DB["🗃️ F1_DB Database"]
-            direction TB
-            
-            subgraph STAGING["🚪 RAW SCHEMA"]
-                
-            end
-            
-            subgraph REFINEMENT["⚙️ REFINEMENT SCHEMA"]
-                
-            end
-            
-            subgraph DELIVERY["📈 DELIVERY SCHEMA"]
-                
-            end
-        end
-        
-        subgraph APPS["🖥️ Applications"]
-            direction LR
-            STREAMLIT["🎯 Streamlit Dashboard"]
-            SNOWSIGHT["👁️ Snowsight Dashboards"]
-        end
-        
-        %% Data flow arrows
-        CSV --> STAGING
-        JSON --> STAGING
-        MARKET --> STAGING
-        
-        STAGING --> REFINEMENT
+        RAW --> REFINEMENT
         REFINEMENT --> DELIVERY
-        
-        DELIVERY --> STREAMLIT
-        DELIVERY --> SNOWSIGHT
     end
     
-    %% External tools positioned below
-    subgraph TOOLS["🛠️ Development Tools"]
-        direction LR
-        DBT["🔨 dbt"]
-        GITHUB["🐙 GitHub"]
-    end
+    %% Applications
+    STREAMLIT["🎯 Streamlit Dashboard"]
+    SNOWSIGHT["👁️ Snowsight Dashboards"]
+    
+    %% Development Tools
+    DBT["🔨 dbt"]
+    GITHUB["🐙 GitHub"]
+    
+    %% Data Flow
+    CSV --> RAW
+    JSON --> RAW
+    MARKET --> RAW
+    
+    DELIVERY --> STREAMLIT
+    DELIVERY --> SNOWSIGHT
     
     %% Tool connections
-    DBT -.-> STAGING
+    DBT -.-> RAW
     DBT -.-> REFINEMENT
     DBT -.-> DELIVERY
     GITHUB -.-> DBT
     
     %% Styling
-    style SNOWFLAKE fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
     style F1_DB fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
-    style SOURCES fill:#fff2e6,stroke:#ff8800,stroke-width:2px
-    style STAGING fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+    style RAW fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
     style REFINEMENT fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
     style DELIVERY fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
-    style APPS fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
-    style TOOLS fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
     
-    style RAW_TABLES fill:#f0fff0,stroke:#009900
-    style REFINED_TABLES fill:#fff0f5,stroke:#cc0055
-    style FINAL_TABLES fill:#f8f0ff,stroke:#5500cc
     style CSV fill:#fff5e6,stroke:#ff6600
     style JSON fill:#fff5e6,stroke:#ff6600
     style MARKET fill:#fff5e6,stroke:#ff6600
