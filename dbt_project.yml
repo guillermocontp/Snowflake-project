@@ -38,10 +38,13 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   F1_DBT_project:
     # Applies to all files under models/example/
-    staging:
+     staging:
+      +schema: DBT_STAGING
       +materialized: view
-    refinement:
+     refinement:
+      +schema: DBT_REFINEMENT
       +materialized: table
-    delivery: 
+     delivery:
+      +schema: DBT_DELIVERY
       +materialized: table
 
