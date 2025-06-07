@@ -6,16 +6,21 @@ import requests
 from PIL import Image, ImageOps
 from io import BytesIO
 import cairosvg
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 #config to connect SF
 conn = snowflake.connector.connect(
-    user='JELLYFISH',
-    password='Vanilka4usskssk',
-    account='NLB11398',
-    warehouse='F1',
-    database='F1_DB',
-    schema='DELIVERY',
-    role = 'JELLYFISH_ROLE'
+    user=os.getenv('SNOWFLAKE_USER'),
+    password=os.getenv('SNOWFLAKE_PASSWORD'),
+    account=os.getenv('SNOWFLAKE_ACCOUNT'),
+    warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
+    database=os.getenv('SNOWFLAKE_DATABASE'),
+    schema=os.getenv('SNOWFLAKE_SCHEMA'),
+    role=os.getenv('SNOWFLAKE_ROLE')
     )
 
 def run_query(query):

@@ -39,8 +39,8 @@ The initial phase of the pipeline focuses on acquiring raw data from various sou
     * **Format:** CSV files and tables from Marketplace
 * **Extraction Method:**
     * CSV files were uploaded from a stage using snowsight UI.
-    * JSON data was originally CSV and then changed to JSON using python [code here](Snowflake-ProjectAdditional%20code/load_json.sql).
-    * FastF1 library used within Python scripts to fetch specific data, [code here](additional%20code/load_json.sql).
+    * JSON data was originally CSV and then changed to JSON using python [code here](/Additional%20code/load_json.sql).
+    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/load_json.sql).
     * Snowflake Marketplace data accessed directly via shared databases.
 
 ## 3. Snowflake Database Setup
@@ -78,7 +78,7 @@ A role-based access control (RBAC) model was implemented to manage permissions w
     These five roles are intended for users actively involved in developing, maintaining, and utilizing the data pipeline. They have been granted comprehensive permissions to perform most operations within the `F1_DB` relevant to their functions (e.g., read/write on schemas, usage on warehouses).
 
 * **Dashboard Consumer Role:**
-    * `DASHBOARD_ROLE`: This role has restricted, read-only access, primarily to objects within the `DELIVERY` schema. This is intended for users who only consume the final dashboards and reports, ensuring they cannot modify underlying data or structures. [SQL code]()
+    * `DASHBOARD_ROLE`: This role has restricted, read-only access, primarily to objects within the `DELIVERY` schema. This is intended for users who only consume the final dashboards and reports, ensuring they cannot modify underlying data or structures. [SQL code](/Additional%20code/Dashboard_access_role.sql)
 
 
 ## 4. Data Loading (Staging Layer)
