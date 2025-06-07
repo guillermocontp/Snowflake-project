@@ -61,21 +61,21 @@ graph TB
             direction TB
             
             subgraph SOURCES["📊 Data Sources"]
-                CSV["📄 CSV Files<br/>(Kaggle F1 Data)"]
-                JSON["📋 JSON Files<br/>(FastF1 Data)"]
+                CSV["📄 CSV Files<br/>"]
+                JSON["📋 JSON Files<br/>"]
                 MARKET["🏪 Snowflake<br/>Marketplace"]
             end
             
             subgraph STAGING["🚪 RAW SCHEMA - Staging Layer"]
-                RAW_TABLES["📁 Raw Tables<br/>• circuits<br/>• drivers<br/>• races<br/>• results<br/>• lap_times<br/>• weather_raw"]
+                RAW_TABLES["📁 Raw Tables<br/>"]
             end
             
             subgraph REFINEMENT["⚙️ REFINEMENT SCHEMA - Processing Layer"]
-                REFINED_TABLES["🔧 Processed Tables<br/>• circuits_clean<br/>• drivers_clean<br/>• results_enhanced<br/>• weather_aggregated"]
+                REFINED_TABLES["🔧 Processed Tables<br/>"]
             end
             
             subgraph DELIVERY["📈 DELIVERY SCHEMA - Analytics Layer"]
-                FINAL_TABLES["📊 Dashboard Tables<br/>• dashboard<br/>• race_analytics<br/>• performance_metrics"]
+                FINAL_TABLES["📊 Fact tables<br/>• race_analytics<br/>"]
             end
             
             CSV --> STAGING
@@ -101,6 +101,8 @@ graph TB
     end
     
     DBT -.-> REFINEMENT
+    DBT -.-> STAGING
+    DBT -.-> DELIVERY
     GITHUB -.-> DBT
     
     %% Styling
