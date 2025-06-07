@@ -256,7 +256,7 @@ Data residing in the `STAGING` schema is then processed and moved to the `REFINE
 
     * [Refinement of lap_times data](/models/refinement/lap_times_refined.sql)
 
-    *[Refinement of results data](/models/refinement/results_refined.sql)
+    * [Refinement of results data](/models/refinement/results_refined.sql)
 
     
 ## 6. Data Delivery (Delivery Layer)
@@ -266,7 +266,7 @@ The `DELIVERY` schema houses the final datasets optimized for consumption by das
 * **Purpose:** The tables are denormalized and aggregated to provide fast and easy access to information required for specific reports or analyses. So far there is one table where the information is extracted from.
 * **Key Tables/Views for Dashboards:**
     
-    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information(I dont know what this does, correct it).[SQL code](/models/delivery/reporting_table.sql) is this the correct table?
+    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information from `F1_DB.DELIVERY.DASHBOARD` table.[SQL code](/models/delivery/reporting_table.sql) is this the correct table?
     * `Streamlit visualization`: A streamlit app was created to use the data, and present information about the results in a specific circuit a given year. 
    
 
