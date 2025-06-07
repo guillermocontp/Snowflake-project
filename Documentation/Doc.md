@@ -55,57 +55,58 @@ The `F1_DB` database is organized into three distinct schemas, representing the 
 
 
 ```mermaid
-flowchart TD
-    %% Data Sources
-    CSV["📄 CSV Files"]
-    JSON["📋 JSON Files"]
-    MARKET["🏪 Snowflake Marketplace"]
+flowchart LR
+  subgraph pipeline["🏎️ F1 Data Pipeline"]
+    direction TB
     
-    %% Database Layers
-    subgraph F1_DB ["🗃️ F1_DB Database"]
-        RAW["🚪 RAW SCHEMA<br/>Staging Layer"]
-        REFINEMENT["⚙️ REFINEMENT SCHEMA<br/>Processing Layer"]
-        DELIVERY["📈 DELIVERY SCHEMA<br/>Analytics Layer"]
+    subgraph sources["📊 Data Sources"]
+        direction LR
+        csv@{ shape: docs, label: "📄 CSV Files" }
+        json@{ shape: docs, label: "📋 JSON Files" }
         
-        RAW --> REFINEMENT
-        REFINEMENT --> DELIVERY
+        marketplace@{ shape: bow-rect, label: "🏪 Snowflake<br/>Marketplace" }
+        
+        csv --- json --- marketplace
     end
     
-    %% Applications
-    STREAMLIT["🎯 Streamlit Dashboard"]
-    SNOWSIGHT["👁️ Snowsight Dashboards"]
+    sources --> database@{ shape: cyl, label: "
+    ❄️ F1_DB <br/>
     
-    %% Development Tools
-    DBT["🔨 dbt"]
-    GITHUB["🐙 GitHub"]
+    " }
+
+    database --> applications["🖥️ Applications"]
     
-    %% Data Flow
-    CSV --> RAW
-    JSON --> RAW
-    MARKET --> RAW
-    
-    DELIVERY --> STREAMLIT
-    DELIVERY --> SNOWSIGHT
-    
-    %% Tool connections
-    DBT -.-> RAW
-    DBT -.-> REFINEMENT
-    DBT -.-> DELIVERY
-    GITHUB -.-> DBT
-    
-    %% Styling
-    style F1_DB fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
-    style RAW fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
-    style REFINEMENT fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
-    style DELIVERY fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
-    
-    style CSV fill:#fff5e6,stroke:#ff6600
-    style JSON fill:#fff5e6,stroke:#ff6600
-    style MARKET fill:#fff5e6,stroke:#ff6600
-    style STREAMLIT fill:#fffce6,stroke:#ff9900
-    style SNOWSIGHT fill:#fffce6,stroke:#ff9900
-    style DBT fill:#f8f8f8,stroke:#555555
-    style GITHUB fill:#f8f8f8,stroke:#555555
+    subgraph applications["🖥️ Applications"]
+        direction LR
+        
+        streamlit["🎯 Streamlit<br/>Dashboard"]
+        snowsight["👁️ Snowsight<br/>Dashboards"]
+        streamlit --- snowsight
+    end
+  end
+  
+  subgraph ci["🛠️ Development & CI/CD"]
+    direction TB
+    github["🐙 GitHub<br/>(Version Control)"]
+    dbt["🔨 dbt<br/>(Data Build Tool)"]
+    github --- dbt
+  end
+  
+  ci <-.-> pipeline
+  
+  %% Styling
+  style pipeline fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
+  
+  style csv fill:#fff5e6,stroke:#ff6600
+  style json fill:#fff5e6,stroke:#ff6600
+  style marketplace fill:#fff5e6,stroke:#ff6600
+  style streamlit fill:#fffce6,stroke:#ff9900
+  style snowsight fill:#fffce6,stroke:#ff9900
+  style github fill:#f8f8f8,stroke:#555555
+  style dbt fill:#f8f8f8,stroke:#555555
 ```
 
 * **`STAGING` Schema (Staging Layer):**
