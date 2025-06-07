@@ -53,18 +53,76 @@ A new database named `F1_DB` was created to house all data, schemas, and objects
 ### 3.2. Schema Architecture (Data Layers)
 The `F1_DB` database is organized into three distinct schemas, representing the different stages of the data lifecycle:
 
+
 ```mermaid
-graph TD
-    subgraph F1_DB ["F1_DB Database"]
-        direction LR
-        A["RAW Schema (Staging Layer)"] --> B["REFINEMENT Schema (Refinement Layer)"]
-        B --> C["DELIVERY Schema (Delivery Layer)"]
+graph TB
+    subgraph SNOWFLAKE["❄️ SNOWFLAKE CLOUD PLATFORM"]
+        subgraph F1_DB["🗃️ F1_DB Database"]
+            direction TB
+            
+            subgraph SOURCES["📊 Data Sources"]
+                CSV["📄 CSV Files<br/>(Kaggle F1 Data)"]
+                JSON["📋 JSON Files<br/>(FastF1 Data)"]
+                MARKET["🏪 Snowflake<br/>Marketplace"]
+            end
+            
+            subgraph STAGING["🚪 RAW SCHEMA - Staging Layer"]
+                RAW_TABLES["📁 Raw Tables<br/>• circuits<br/>• drivers<br/>• races<br/>• results<br/>• lap_times<br/>• weather_raw"]
+            end
+            
+            subgraph REFINEMENT["⚙️ REFINEMENT SCHEMA - Processing Layer"]
+                REFINED_TABLES["🔧 Processed Tables<br/>• circuits_clean<br/>• drivers_clean<br/>• results_enhanced<br/>• weather_aggregated"]
+            end
+            
+            subgraph DELIVERY["📈 DELIVERY SCHEMA - Analytics Layer"]
+                FINAL_TABLES["📊 Dashboard Tables<br/>• dashboard<br/>• race_analytics<br/>• performance_metrics"]
+            end
+            
+            CSV --> STAGING
+            JSON --> STAGING
+            MARKET --> STAGING
+            
+            STAGING --> REFINEMENT
+            REFINEMENT --> DELIVERY
+        end
+        
+        subgraph APPS["🖥️ Applications"]
+            STREAMLIT["🎯 Streamlit<br/>Dashboard"]
+            SNOWSIGHT["👁️ Snowsight<br/>Dashboards"]
+        end
+        
+        DELIVERY --> STREAMLIT
+        DELIVERY --> SNOWSIGHT
     end
+    
+    subgraph TOOLS["🛠️ Development Tools"]
+        DBT["🔨 dbt<br/>(Data Build Tool)"]
+        GITHUB["🐙 GitHub<br/>(Version Control)"]
+    end
+    
+    DBT -.-> REFINEMENT
+    GITHUB -.-> DBT
+    
     %% Styling
-    style F1_DB fill:#f0f7ff,stroke:#0055cc,stroke-width:2px,stroke-dasharray: 5 5
-    style A fill:#e6f3ff,stroke:#004bad
-    style B fill:#d0e7ff,stroke:#004bad
-    style C fill:#b9daff,stroke:#004bad
+    style SNOWFLAKE fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+    style F1_DB fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
+    style SOURCES fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+    style STAGING fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+    style REFINEMENT fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
+    style DELIVERY fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
+    style APPS fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+    style TOOLS fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
+    
+    style RAW_TABLES fill:#f0fff0,stroke:#009900
+    style REFINED_TABLES fill:#fff0f5,stroke:#cc0055
+    style FINAL_TABLES fill:#f8f0ff,stroke:#5500cc
+    style CSV fill:#fff5e6,stroke:#ff6600
+    style JSON fill:#fff5e6,stroke:#ff6600
+    style MARKET fill:#fff5e6,stroke:#ff6600
+    style STREAMLIT fill:#fffce6,stroke:#ff9900
+    style SNOWSIGHT fill:#fffce6,stroke:#ff9900
+    style DBT fill:#f8f8f8,stroke:#555555
+    style GITHUB fill:#f8f8f8,stroke:#555555
 ```
 
 * **`STAGING` Schema (Staging Layer):**
