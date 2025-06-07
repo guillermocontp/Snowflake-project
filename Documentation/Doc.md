@@ -53,6 +53,7 @@ A new database named `F1_DB` was created to house all data, schemas, and objects
 ### 3.2. Schema Architecture (Data Layers)
 The `F1_DB` database is organized into three distinct schemas, representing the different stages of the data lifecycle:
 
+```mermaid
 graph TD
     subgraph F1_DB [F1_DB Database]
         direction LR
@@ -64,6 +65,7 @@ graph TD
     style A fill:#e6f3ff,stroke:#004bad
     style B fill:#d0e7ff,stroke:#004bad
     style C fill:#b9daff,stroke:#004bad
+```
 
 * **`STAGING` Schema (Staging Layer):**
     * **Purpose:** This layer serves as the initial landing zone for all raw data extracted from the source systems. Data here is typically a direct copy or minimally processed version of the source data.
