@@ -2,14 +2,11 @@
 
 **Version:** 1.0
 **Date:** 2025-06-05
-**Author(s):** [Your Name/Team Name]
+
 
 ## 1. Project Overview
 
-This document details the design, implementation, and operational aspects of the Formula 1 (F1) and Weather Data 
-Pipeline project. The primary objective is to demonstrate an end-to-end data engineering workflow within 
-Snowflake, encompassing data extraction from diverse sources, loading, transformation, and preparation for 
-analytical consumption.
+This document details the design, implementation, and operational aspects of the Formula 1 and Weather Data Pipeline project. The primary objective is to design and demonstrate a data engineering pipeline utilizing Snowflake's database and its analytical capabilities, encompassing data extraction from diverse sources, loading, transformation, and preparation for analytical consumption.
 
 A key aspect of this project was the design of a layered database architecture, utilizing distinct Snowflake schemas 
 to represent the different stages of data progression: staging, refinement, and delivery. Guidance was also 
@@ -20,39 +17,7 @@ GitHub for version control and teamwork.
 The project leverages various F1 datasets (circuits, drivers, races, results, lap times, etc.) and corresponding 
 weather data to create a comprehensive analytical environment. 
 In the delivery stage, data is presented as dashboards using the built in snowsight capabilites to create dashboards 
-and streamlit. 
-
-## 2. Data Extraction
-
-The initial phase of the pipeline focuses on acquiring raw data from various sources.
-
-* **Formula 1 Data:**
-    * **Sources:**
-        * [Kaggle F1 datasets](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020/data?select=status.csv)
-        * Python library: FastF1 (Lap data, weather data)    
-    * **Entities:** * Data includes information about circuits, drivers, constructors, race schedules, race results, qualifying results, lap times, pit stops, driver standings, tyre information, weather data
-    * **Format:** CSV files for most (status, races, circuits, drivers, results, tyres). Lap information was transformed to JSON format.
-* **Weather Data:**
-    * **Sources:** * Snowflake Marketplace (sample from Accuweather historical data)
-        * Python library: FastF1 (Lap data, weather data) 
-    * **Entities:** Historical weather conditions (temperature, precipitation, wind speed, humidity, etc.) corresponding to F1 race locations and dates.
-    * **Format:** CSV files and tables from Marketplace
-* **Extraction Method:**
-    * CSV files were uploaded from a stage using snowsight UI.
-    * JSON data was originally CSV and then changed to JSON using python [code here](/Additional%20code/load_json.sql).
-    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/load_json.sql).[EWA to add this script]
-    * Snowflake Marketplace data accessed directly via shared databases.
-
-## 3. Snowflake Database Setup
-
-A dedicated Snowflake database and structured schemas form the foundation of this pipeline.
-
-### 3.1. Database Creation
-A new database named `F1_DB` was created to house all data, schemas, and objects related to this project.
-
-### 3.2. Schema Architecture (Data Layers)
-The `F1_DB` database is organized into three distinct schemas, representing the different stages of the data lifecycle:
-
+and streamlit:
 
 ```mermaid
 flowchart LR
@@ -92,7 +57,7 @@ flowchart LR
     github --- dbt
   end
   
-  ci <-.-> pipeline
+  pipeline <-.-> ci
   
   %% Styling
   style pipeline fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
@@ -109,29 +74,115 @@ flowchart LR
   style dbt fill:#f8f8f8,stroke:#555555
 ```
 
+## 2. Data Extraction
+
+The initial phase of the pipeline focuses on acquiring raw data from various sources.
+
+* **Formula 1 Data:**
+    * **Sources:**
+        * [Kaggle F1 datasets](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020/data?select=status.csv)
+        * Python library: [FastF1](https://docs.fastf1.dev/) (Lap data, weather data)    
+    * **Entities:** * Data includes information about circuits, drivers, constructors, race schedules, race results, qualifying results, lap times, pit stops, driver standings, tyre information, weather data
+    * **Format:** CSV files for most (status, races, circuits, drivers, results, tyres). Lap information was transformed to JSON format.
+* **Weather Data:**
+    * **Sources:** * Snowflake Marketplace (sample from Accuweather historical data)
+        * Python library: FastF1 (Lap data, weather data) 
+    * **Entities:** Historical weather conditions (temperature, precipitation, wind speed, humidity, etc.) corresponding to F1 race locations and dates.
+    * **Format:** CSV files and tables from Marketplace
+* **Extraction Method:**
+    * CSV files were uploaded from a stage using snowsight UI.
+    * JSON data was originally CSV and then changed to JSON using python.
+    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/load_json.sql).[EWA to add this script]
+    * Snowflake Marketplace data accessed directly via shared databases.
+
+## 3. Snowflake Database Setup
+
+A dedicated Snowflake database and structured schemas form the foundation of this pipeline.
+
+### 3.1. Database Creation
+A new database named `F1_DB` was created to house all data, schemas, and objects related to this project.
+
+### 3.2. Schema Architecture (Data Layers)
+The `F1_DB` database is organized into three distinct schemas, representing the different stages of the data lifecycle:
+
+```mermaid
+flowchart TB
+  subgraph database["❄️ F1_DB"]
+    direction TB
+    
+    sources["📊 Stage<br/>
+    (CSV, JSON, Marketplace)"]
+    
+    subgraph schemas["🏗️  Schemas"]
+        direction TB
+        
+        raw@{ shape: lin-cyl, label: "🚪 RAW <br/>Staging Layer<br/>" }
+             
+        refinement@{ shape: lin-cyl, label: "⚙️ REFINEMENT <br/>Processing Layer<br/>" }
+        
+        delivery@{ shape: lin-cyl, label: "📈 DELIVERY <br/>Analytics Layer<br/>" }
+        raw --> refinement
+        refinement --> delivery
+    end
+    
+    sources --> raw
+    delivery --> applications["🖥️ Applications<br/>(Streamlit & Snowsight)"]
+    
+    subgraph applications["🖥️ Visualizations"]
+        direction LR
+        streamlit@{ shape: curv-trap, label: "🎯 Streamlit" }
+        snowsight@{ shape: curv-trap, label: "👁️ Snowsight<br/>Dashboards" }
+        
+        streamlit --- snowsight
+    end
+  end
+  
+  
+  
+  %% Styling
+  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
+  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+  
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+  style refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
+  style delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
+  style streamlit fill:#fffce6,stroke:#ff9900
+  style snowsight fill:#fffce6,stroke:#ff9900
+```
+
+
+
+
 * **`STAGING` Schema (Staging Layer):**
-    * **Purpose:** This layer serves as the initial landing zone for all raw data extracted from the source systems. Data here is typically a direct copy or minimally processed version of the source data.
-    * **Contents:** Raw tables corresponding to each extracted CSV and JSON file.
+    * **Purpose:** This layer serves as the initial landing zone for all raw data extracted from the source systems:stages and Marketplace. 
+    
 
 * **`REFINEMENT` Schema (Refinement Layer):**
-    * **Purpose:** while some tables only required eliminating uninteresting columns (circuits, drivers, lap_times) other tables required joining (results, tyres) and further aggregated operations (weather_refined)
-    * **Contents:** * **`DELIVERY` Schema (Delivery Layer):**
-    * **Purpose:** This layer contains the final, presentation-ready datasets. We decided to create specific denormalized tables that provide the information necessary to generate the visuals that show the insights we want to describe.
-    * **Contents:** ### 3.3. Roles and Access Control
+    * **Purpose:** This layer contains tables after a few transformations: while some tables only required eliminating uninteresting columns, other tables required joining, and further aggregated operations.
+    
+* **`DELIVERY` Schema (Delivery Layer):**
+    * **Purpose:** This layer contains the final, presentation-ready datasets. We decided to create specific denormalized tables that provide the information necessary to generate the visuals through Snowsight's built-in dashboard creation and streamlit.
+* **`Contents`**
+
+![DBT Diagram. From left to right: The green boxes represent the Stages, then RAW schema, REFINEMENT and finally DELIVERY schemas are shown](/pictures/dbt_graph.png)
+
+### 3.3. Roles and Access Control
 A role-based access control (RBAC) model was implemented to manage permissions within `F1_DB`.
 
 * **Administrative Setup:**
     * An administrative role (in this case `TRAINING_ROLE` had enough permissions to do this 'admin' job) was used to create the `F1_DB` database, the `STAGING`, `REFINEMENT`, and `DELIVERY` schemas. [SQL code] ()
 
 * **Functional Roles:**
-    The following roles have been created and granted privileges to work on the `F1_DB`:
+    The following roles have been granted privileges to work on the `F1_DB`:
     * `EAGLE`
     * `COBRA`
     * `JELLYFISH`
     * `GRIZZLY`
     * `FLAMINGO`
 
-    These five roles are intended for users actively involved in developing, maintaining, and utilizing the data pipeline. They have been granted comprehensive permissions to perform most operations within the `F1_DB` relevant to their functions (e.g., read/write on schemas, usage on warehouses).
+    These five roles are intended for users actively involved in developing, maintaining, and utilizing the data pipeline. They have been granted comprehensive permissions to perform most operations within the `F1_DB` relevant to their functions (e.g., read/write on schemas, usage on warehouses). [SQL code](/Additional%20code/Database_creation_&_role_access.sql)
 
 * **Dashboard Consumer Role:**
     * `DASHBOARD_ROLE`: This role has restricted, read-only access, primarily to objects within the `DELIVERY` schema. This is intended for users who only consume the final dashboards and reports, ensuring they cannot modify underlying data or structures. [SQL code](/Additional%20code/Dashboard_access_role.sql)
@@ -143,19 +194,46 @@ Once the raw data files (CSVs, JSON) were extracted, they were loaded into the `
 
 * **Mechanism:** Snowflake internal/external stages were utilized as interim storage for the data files, created using Snowsight UI. Each user was tasked to generate a stage and load the data from there into the RAW schema.
     * CSV files were uploaded from a stage using snowsight UI.
-    * This SQL code was used to create the stage, load the JSON data and then parse it into a table created in RAW schema. [Link to SQL code]()
-    * Snowflake Marketplace data accessed directly via shared databases, then the selected data was copied into a table:
+    * This SQL code was used to create the stage, load the JSON data and then parse it into a table created in RAW schema. [code here](/Additional%20code/load_json.sql)
+    * Snowflake Marketplace data accessed directly via shared databases, then the selected data was copied into a table.
 
-* **Loading into Tables:** The `COPY INTO <table>` command was used to load data from the staged files into corresponding raw tables within the `STAGING` schema.
+* **Loading into Tables:** The `COPY INTO <table>` command was used to load data from the market place into a csv file. then it was copied into the corresponding raw table within the `STAGING` schema.
     * File formats were defined to correctly parse CSV (delimiters, headers) and JSON data.
 
     ```sql
+    --copy from smarket place into a csv file
     COPY INTO @WEATHER/weather_cities.csv
       FROM (
         SELECT *
         FROM SAMPLE_OF_ACCUWEATHERS_HISTORICAL_WEATHER_DATA.HISTORICAL.TOP_CITY_DAILY_METEOROLOGICAL_METRIC
       )
       FILE_FORMAT = (TYPE = 'CSV');
+
+    --create a new table to in the RAW SCHEMA
+    CREATE OR REPLACE TABLE weather_cities (
+      CoutryCode STRING,
+      CityName STRING,
+      PrecipitationAvg FLOAT,
+      PressureAvg FLOAT,
+      TemperatureAvg FLOAT,
+      RainRateAvg FLOAT,
+      WindSpeedAvg FLOAT
+        );
+
+    ---Add the data from the csv file
+    COPY INTO weather_cities
+    FROM (
+        SELECT
+            $1 AS CoutryCode,
+            $3 AS CityName,
+            $54 AS PrecipitationAvg,
+            $59 AS PressureAvg,
+            $97 AS TemperatureAvg,
+            $69 AS RainRateAvg,
+            $141 AS WindSpeedAvg
+        FROM @weather/weather_cities.csv
+    )
+    FILE_FORMAT = (TYPE = 'CSV' SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
     ```
 
 
@@ -171,12 +249,16 @@ Data residing in the `STAGING` schema is then processed and moved to the `REFINE
     * **Joining Datasets:** Several tables required joining to enrich the data. For instance, `results` data was joined with driver and race details, and `tyres` information was linked to specific drivers and races.
     * **Aggregated Operations:** For certain datasets, like `weather` data, further aggregations were performed to derive meaningful metrics (e.g., average temperature during a race, predominant weather conditions).
     * **Validation:** Basic validation checks were performed to ensure data integrity after transformations. This was performed using DBT's standard tests.
-* **Specific Transformations & Joins:**
-   link to code, link to code
+* **Specific Transformations & Joins:** Only the code that involves joins or any other operation to columns is ennumerated here. Otherwise the table was created only selecting some columns from the raw_table
+    * [Refinement of tyres data](/models/refinement/_tyres_refined.sql)
 
+    * [Refinement of weather data](/models/refinement/_weather_refined.sql)
 
+    * [Refinement of lap_times data](/models/refinement/lap_times_refined.sql)
 
+    *[Refinement of results data](/models/refinement/results_refined.sql)
 
+    
 ## 6. Data Delivery (Delivery Layer)
 
 The `DELIVERY` schema houses the final datasets optimized for consumption by dashboards.
@@ -184,57 +266,28 @@ The `DELIVERY` schema houses the final datasets optimized for consumption by das
 * **Purpose:** The tables are denormalized and aggregated to provide fast and easy access to information required for specific reports or analyses. So far there is one table where the information is extracted from.
 * **Key Tables/Views for Dashboards:**
     
-    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information.(Should we add the columns here?)
+    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information(I dont know what this does, correct it).[SQL code](/models/delivery/reporting_table.sql) is this the correct table?
+    * `Streamlit visualization`: A streamlit app was created to use the data, and present information about the results in a specific circuit a given year. 
    
 
 ## 7. Streamlit Integration
 
 The data prepared in the `DELIVERY` layer is visualized and interacted with via a Streamlit application.
 
-* **Purpose:** To provide an interactive web-based interface for exploring F1 data insights.
 * **Integration Details:**
     * The Streamlit application connects to Snowflake using the Snowflake Connector for Python.
     * Queries are executed against tables/views in the `F1_DB.DELIVERY` schema.
     * Using different APIs, we pull the circuit outline, information about it from wikipedia and displayed some visualizations
-* **Streamlit Code Snippets/Reference:**
-    ```python
-    # Placeholder for Python/Streamlit code
-    # User to provide key snippets for connecting to Snowflake and fetching/displaying data.
-    # Example:
-    # import streamlit as st
-    # import snowflake.connector
-    # import pandas as pd
+* **Streamlit Code Snippets/Reference:** [Python code](/Streamlit_dashboard/f1.py)
 
-    # # Initialize connection.
-    # # Uses st.experimental_singleton to only run once.
-    # @st.experimental_singleton
-    # def init_connection():
-    #     return snowflake.connector.connect(
-    #         **st.secrets["snowflake"], client_session_keep_alive=True
-    #     )
-
-    # conn = init_connection()
-
-    # # Perform query.
-    # # Uses st.experimental_memo to only rerun when the query changes or after 10 min.
-    # @st.experimental_memo(ttl=600)
-    # def run_query(query):
-    #     with conn.cursor() as cur:
-    #         cur.execute(query)
-    #         return cur.fetchall()
-
-    # # Example usage:
-    # # rows = run_query("SELECT * FROM F1_DB.DELIVERY.fct_race_analysis LIMIT 10;")
-    # # df = pd.DataFrame(rows, columns=[desc[0] for desc in conn.cursor().description]) # Adjust column fetching
-    # # st.dataframe(df)
-    ```
-
+ 
 ## 8. dbt (Data Build Tool) Implementation
 
 In parallel to direct SQL-based transformations, dbt was utilized to test its functionality and explore its benefits for managing the data transformation workflow.
 
 * **Scope of dbt Use:** dbt was used to replicate the whole pipeline, in a different schema(each DBT user has its own schema).
     * Part of the diagrams shown here as well as the list of tables are taking from DBT documentation.
+    * The SQL code showed in this documentation comes from the DBT pipeline.
 * **Key dbt Features Leveraged:**
     * **Models:** SQL `SELECT` statements defining tables/views.
     * **Sources:** Declaring raw data tables from the `STAGING` schema.
@@ -262,18 +315,8 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
          clean-targets:         # directories to be removed by `dbt clean`
          - "target"
          - "dbt_packages"
-
-
     # Configuring models
-    # Full documentation: https://docs.getdbt.com/docs/configuring-models
-
-# In dbt, the default materialization for a model is a view. This means, when you run 
-# dbt run or dbt build, all of your models will be built as a view in your data platform. 
-# The configuration below will override this setting for models in the example folder to 
-# instead be materialized as tables. Any models you add to the root of the models folder will 
-# continue to be built as views. These settings can be overridden in the individual model files
-# using the `{{ config(...) }}` macro.
-
+    
      models:
        F1_DBT_project:
         # Applies to all files under models/example/
@@ -281,23 +324,23 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
           +materialized: view
         refinement:
           +materialized: table
-
+        delivery: 
+          +materialized: table
     ```
 * **Observations/Benefits Noted:** [User to add insights, e.g., improved modularity, automated testing, version control benefits, easier documentation and lineage tracking.]
 
 ## 9. Data Quality & Testing
 
-Ensuring data accuracy and reliability is critical.
+Ensuring data accuracy and reliability is critical. Testing was done using DBT's automated tests.
 
 * **Staging Layer:** Basic checks during loading (e.g., file format validation, row counts).
 * **Refinement Layer:**
     * Application of data cleaning rules (handling NULLs, outliers).
-    * Data type enforcement.
-    * Referential integrity checks (e.g., ensuring `statusID` in results exists in `status_mapping`).
-    * If using dbt, schema tests (`unique`, `not_null`, `accepted_values`, `relationships`) and custom data tests were implemented.
-* **Delivery Layer:** Validation of aggregations and final metrics against known totals or benchmarks.
+    * Referential integrity checks (e.g., ensuring `statusID` in results exists in `status_mapping`).? if we do it we can leave this here
+    * schema tests (`unique`, `not_null`).
 
-## 10. Orchestration & Scheduling
+
+## 10. Orchestration?
 
 The pipeline's execution is managed to ensure timely data updates.
 
@@ -306,7 +349,7 @@ The pipeline's execution is managed to ensure timely data updates.
     * [User to describe: e.g., Manual execution of SQL scripts/dbt commands for this demo.]
     * [User to describe potential for automation: e.g., Using Snowflake Tasks to run SQL, or a scheduler like dbt Cloud, Airflow, or cron for dbt jobs.]
 
-## 11. Performance & Optimization Considerations
+## 11. Performance & Optimization Considerations?
 
 While this project is a demonstration, several aspects can be considered for performance in a production scenario:
 
