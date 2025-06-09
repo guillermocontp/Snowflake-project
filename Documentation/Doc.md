@@ -85,10 +85,10 @@ The initial phase of the pipeline focuses on acquiring raw data from various sou
     * **Entities:** * Data includes information about circuits, drivers, constructors, race schedules, race results, qualifying results, lap times, pit stops, driver standings, tyre information, weather data
     * **Format:** CSV files for most (status, races, circuits, drivers, results, tyres). Lap information was transformed to JSON format.
 * **Weather Data:**
-    * **Sources:** * Snowflake Marketplace (sample from Accuweather historical data)
+    * **Sources:** * Snowflake Marketplace (sample from LLC: frostbyte)
         * Python library: FastF1 (Lap data, weather data) 
     * **Entities:** Historical weather conditions (temperature, precipitation, wind speed, humidity, etc.) corresponding to F1 race locations and dates.
-    * **Format:** CSV files and tables from Marketplace
+    * **Format:** CSV files and tables from Marketplace and Fast F1 API
 * **Extraction Method:**
     * CSV files were uploaded from a stage using snowsight UI.
     * JSON data was originally CSV and then changed to JSON using python.
