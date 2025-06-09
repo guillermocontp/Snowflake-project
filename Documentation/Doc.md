@@ -327,7 +327,7 @@ flowchart TB
   %% Styling
   style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
   style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
-  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+  
   style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
   
   style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
