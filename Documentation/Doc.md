@@ -92,7 +92,7 @@ The initial phase of the pipeline focuses on acquiring raw data from various sou
 * **Extraction Method:**
     * CSV files were uploaded from a stage using snowsight UI.
     * JSON data was originally CSV and then changed to JSON using python.
-    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/load_json.sql).[EWA to add this script]
+    * FastF1 library used within Python scripts to fetch specific data, [code here](/Additional%20code/f1_api_connection.py).
     * Snowflake Marketplace data accessed directly via shared databases.
 
 ## 3. Snowflake Database Setup
@@ -279,7 +279,6 @@ The data prepared in the `DELIVERY` layer is visualized and interacted with via 
     * Queries are executed against tables/views in the `F1_DB.DELIVERY` schema.
     * Using different APIs, we pull the circuit outline, information about it from wikipedia and displayed some visualizations
 * **Streamlit Code Snippets/Reference:** [Python code](/Streamlit_dashboard/f1.py)
-* **Streamlit web link:** Follow [this link]()
 
  
 ## 8. dbt (Data Build Tool) Implementation
@@ -321,7 +320,6 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
      models:
        F1_DBT_project:
         # Applies to all files under models/example/
-        # This configuration ensures that when deploying in the 'prod' environment, dbt will create the 3 layers/schemas 
          staging:
           +materialized: view
         refinement:
@@ -355,7 +353,7 @@ The pipeline's execution is managed to ensure timely data updates.
 
 While this project is a demonstration, several aspects can be considered for performance in a production scenario:
 
-* **Warehouse Sizing:** Using appropriately sized virtual warehouses for different workloads (loading, transformation, querying).
+* **Warehouse Sizing:** Creating a dedicated virtual warehouse tailored to handle all workloads, including loading, transformation, and querying.
 * **Query Optimization:** Writing efficient SQL, leveraging Snowflake's query optimizer. For complex transformations, breaking them into smaller, manageable steps (CTEs or intermediate tables).
 * **Clustering Keys:** For large tables in the `DELIVERY` or `REFINEMENT` layers, defining clustering keys on frequently filtered or joined columns can improve query performance.
 * **Materialization Strategy (dbt):** Choosing appropriate materializations (table, view, incremental) for dbt models based on size, query frequency, and refresh requirements.
@@ -366,22 +364,9 @@ In addition to RBAC, other security aspects include:
 
 * **Data at Rest:** Handled by Snowflake's default encryption.
 * **Data in Transit:** Secured via TLS/SSL for connections to Snowflake.
-* **Sensitive Data:** [User to specify if any PII or sensitive data is handled and how it's masked or protected, e.g., using Snowflake's Dynamic Data Masking or External Tokenization if applicable, though likely not for F1 data.]
-* **Secrets Management:** For API keys (e.g., weather API) or Snowflake credentials used in scripts/Streamlit, using secure methods like environment variables, Streamlit secrets, or a dedicated secrets manager.
+* **Secrets Management:** Snowflake access credentials for the Streamlit app were stored securely in a file excluded by .gitignore, preventing exposure in version control.
 
-## 13. Lessons Learned & Challenges
-
-* [User to add any specific challenges encountered, e.g., inconsistencies in source data formats, complexity in joining disparate datasets, learning curve with new tools.]
-* [User to add key takeaways or insights gained during the project.]
-
-## 14. Future Enhancements & Roadmap
-
-* Integration of additional F1 data sources and live data (e.g., telemetry, tyre information, betting odds).
-* Development of predictive models (e.g., race outcome prediction, qualifying performance).
-* Full automation of the ELT pipeline using an orchestrator (airflow) and a specific ingestor like 
-* Enhanced interactive visualizations and comparative analytics in Streamlit.
-
-## 15. Glossary
+## 13. Glossary
 
 * **CSV:** Comma-Separated Values, a common file format for tabular data.
 * **dbt:** Data Build Tool, a transformation workflow tool.
@@ -395,15 +380,7 @@ In addition to RBAC, other security aspects include:
 
 ## Appendix A: Key SQL Scripts & Configurations
 
-* **DBT configuration:**
-[macro that generates the 3 schemas in prod](/macros/generate_prod_schemas.sql)
-[yml file for models-STAGING](/models/staging/schema.yml)
-[yml file for models-REFINEMENT](/models/refinement/schema.yml)
-[yml file for models-DELIVERY](/models/delivery/schema.yml)
-[yml file - sources](/models/sources.yml)
-
-
-
+[This section can contain or link to important SQL scripts (table creations, complex views not fully inline), dbt configuration files (`dbt_project.yml`, `profiles.yml`), or Snowpipe definitions if used.]
 
 ---
 
