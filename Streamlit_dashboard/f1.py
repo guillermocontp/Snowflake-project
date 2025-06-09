@@ -15,7 +15,7 @@ load_dotenv()
 def get_config(key):
     # Try Streamlit secrets first (for cloud deployment)
     try:
-        return st.secrets[key]
+       return st.secrets[key]
     except:
         # Fall back to environment variables (for local development)
         return os.getenv(key)
@@ -155,13 +155,15 @@ if (
     winner_name = filtered_race['WINNER_NAME']
     winner_nationality = filtered_race['WINNER_NATIONALITY']
     winner_image_url = fetch_wikipedia_image(winner_name)
-
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: left;'>🏆 Winner</h3>", unsafe_allow_html=True)
     if winner_image_url:
         winner_img = load_image_with_white_bg(winner_image_url, max_size=(150, 150))
         if winner_img:
             st.markdown(
-                f"<div style='text-align: center;'>"
+                f"<div style='text-align: left;'>"
                 f"<img src='{winner_image_url}' width='150'><br>"
                 f"<strong>{winner_name}</strong> ({winner_nationality})"
                 f"</div>",
@@ -169,6 +171,8 @@ if (
             )
 
     # Weather conditions section
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: left;'>🌦️ Weather Conditions</h3>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     col1.metric("Air Temp (°C)", round(filtered_race['AIRTEMP'], 2))
@@ -194,13 +198,17 @@ if (
     description = tyre_descriptions.get(compound.upper(), "No description available.")
 
     # Center-aligned Tyres section
-    st.markdown("<h3 style='text-align: center;'>🛞 Tyres</h3>", unsafe_allow_html=True)
-    st.markdown(f"<p style='text-align: center; font-size: 18px; '>Most common compound: <strong>{compound}</strong></p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='text-align: center; font-size: 18px; '>{description}</p>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: left;'>🛞 Tyres</h3>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align: left; font-size: 18px; '>Most common compound: <strong>{compound}</strong></p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align: left; font-size: 18px; '>{description}</p>", unsafe_allow_html=True)
 
 
     # Lap times section
-    st.markdown("<h3 style='text-align: center;'>⏱️ Lap Times (in minutes)</h3>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: left;'>⏱️ Lap Times (in minutes)</h3>", unsafe_allow_html=True)
     lap_col1, lap_col2, lap_col3 = st.columns(3)
     lap_col1.metric("Fastest Lap", round(filtered_race['RACE_FASTEST_LAP_MINUTES'], 2))
     lap_col2.metric("Race Avg Lap", round(filtered_race['RACE_AVG_LAP_TIME_MINUTES'], 2))
