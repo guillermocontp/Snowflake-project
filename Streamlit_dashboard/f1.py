@@ -156,7 +156,7 @@ if (
     winner_nationality = filtered_race['WINNER_NATIONALITY']
     winner_image_url = fetch_wikipedia_image(winner_name)
 
-    st.markdown("<h3 style='text-align: center;'>🏆 Winner</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: left;'>🏆 Winner</h3>", unsafe_allow_html=True)
     if winner_image_url:
         winner_img = load_image_with_white_bg(winner_image_url, max_size=(150, 150))
         if winner_img:
@@ -169,7 +169,7 @@ if (
             )
 
     # Weather conditions section
-    st.markdown("<h3 style='text-align: center;'>🌦️ Weather Conditions</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: left;'>🌦️ Weather Conditions</h3>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     col1.metric("Air Temp (°C)", round(filtered_race['AIRTEMP'], 2))
     col2.metric("Track Temp (°C)", round(filtered_race['TRACKTEMP'], 2))
