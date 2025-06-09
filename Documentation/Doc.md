@@ -288,14 +288,64 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
 * **Scope of dbt Use:** dbt was used to replicate the whole pipeline, in a different schema(each DBT user has its own schema).
     * Part of the diagrams shown here as well as the list of tables are taking from DBT documentation.
     * The SQL code showed in this documentation comes from the DBT pipeline.
+
+flowchart TB
+  subgraph database["❄️ F1_DB"]
+    direction LR
+    sources@{ shape: docs, label: "📊 SOURCES<br/>
+    (CSV, JSON, Marketplace)"}
+ 
+
+    subgraph ci["🛠️ Development & CI/CD"]
+        direction TB
+        github["🐙 GitHub<br/>(Version Control)"]
+        dbt["🔨 dbt<br/>"]
+        github --- dbt
+    end
+    
+    subgraph schemas["🏗️  Schemas"]
+        direction LR
+        
+        dbt_raw@{ shape: lin-cyl, label: "🚪 DBT_RAW <br/>Staging Layer<br/>" }
+             
+        dbt_refinement@{ shape: lin-cyl, label: "⚙️ DBT_REFINEMENT <br/>Processing Layer<br/>" }
+        
+        dbt_delivery@{ shape: lin-cyl, label: "📈 DBT_DELIVERY <br/>Analytics Layer<br/>" }
+        dbt_raw --> dbt_refinement
+        dbt_refinement --> dbt_delivery
+    end
+    
+    sources <--> ci
+    ci <--> schemas
+    sources --> schemas
+   
+  end
+  
+  
+  
+  %% Styling
+  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
+  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
+  
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style dbt_raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+  style dbt_refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
+  style dbt_delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
+  style github fill:#f8f8f8,stroke:#555555
+  style dbt fill:#f8f8f8,stroke:#555555
+
+```
+    
 * **Key dbt Features Leveraged:**
     * **Models:** SQL `SELECT` statements defining tables/views.
-    * **Sources:** Declaring raw data tables from the `STAGING` schema.
+    * **Sources:** Declaring raw data tables from the `STAGING` schema as `SOURCES`.
     * **Tests:** Schema tests (unique, not_null) performed to check data consistency.
     * **Documentation:** Generation of project documentation and data lineage graphs used also in this documentation.
     
 * **dbt Project Structure & Documentation:**
-    * The DBT project is similarly structured as the original one. This is the YML file of the project. Remaining files are found within the github repo. The configuration is set to generate views for the raw data and tables for the refinement and delivery schema.
+    * The DBT project is similarly structured as the original one. This is the YML file of the project. Remaining files are found in the annex. The configuration is set to generate views for the raw data and tables for the refinement and delivery schema.
    
     ```yaml
     # name: 'F1_DBT_project'
@@ -319,7 +369,8 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
     
      models:
        F1_DBT_project:
-        # Applies to all files under models/example/
+        
+        # This configuration ensures that when deploying in the 'prod' environment, dbt will create the 3 layers/schemas
          staging:
           +materialized: view
         refinement:
@@ -380,7 +431,12 @@ In addition to RBAC, other security aspects include:
 
 ## Appendix A: Key SQL Scripts & Configurations
 
-[This section can contain or link to important SQL scripts (table creations, complex views not fully inline), dbt configuration files (`dbt_project.yml`, `profiles.yml`), or Snowpipe definitions if used.]
+* **DBT configuration:**
+[macro that generates the 3 schemas in prod](/macros/generate_prod_schemas.sql)
+[yml file for models-STAGING](/models/staging/schema.yml)
+[yml file for models-REFINEMENT](/models/refinement/schema.yml)
+[yml file for models-DELIVERY](/models/delivery/schema.yml)
+[yml file - sources](/models/sources.yml)
 
 ---
 
