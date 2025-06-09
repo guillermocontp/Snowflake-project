@@ -39,12 +39,18 @@ models:
   F1_DBT_project:
     # Applies to all files under models/example/
      staging:
+      +docs:
+        node_color: '#CD7F32'
       +schema: DBT_STAGING
       +materialized: view
      refinement:
+      +docs:
+        node_color: '#C0C0C0'
       +schema: DBT_REFINEMENT
       +materialized: table
      delivery:
+      +docs:
+        node_color: 'gold'
       +schema: DBT_DELIVERY
       +materialized: table
 
