@@ -5,7 +5,7 @@ import streamlit as st
 import requests
 from PIL import Image, ImageOps
 from io import BytesIO
-import cairosvg
+
 import os
 from dotenv import load_dotenv
 
@@ -97,8 +97,8 @@ def load_image_with_white_bg(image_url, max_size=(400, 250)):
     content_type = response.headers.get("Content-Type", "")
     try:
         if content_type == "image/svg+xml" or image_url.lower().endswith(".svg"):
-            png_bytes = cairosvg.svg2png(bytestring=response.content)
-            img = Image.open(BytesIO(png_bytes))
+            st.warning("SVG images are not supported in this deployment")
+            return None
         else:
             img = Image.open(BytesIO(response.content))
     except Exception as e:

@@ -3,5 +3,4 @@ pandas
 streamlit
 requests
 Pillow
-cairosvg
 python-dotenv
