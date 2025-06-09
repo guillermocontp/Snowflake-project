@@ -392,23 +392,21 @@ Ensuring data accuracy and reliability is critical. Testing was done using DBT's
     * schema tests (`unique`, `not_null`).
 
 
-## 10. Orchestration?
+## 10. Collaboration
 
-The pipeline's execution is managed to ensure timely data updates.
+The pipeline's code is managed through this repo. We have collaborated adding/modifying parts of the code. This repo is connected to dbt, which uses it to generate the production models. 
 
-* **Loading (Staging):** [User to describe: e.g., Manual for this demo, or scheduled via external scripts/Snowflake Tasks if automated.]
-* **Transformations (Refinement & Delivery):**
-    * [User to describe: e.g., Manual execution of SQL scripts/dbt commands for this demo.]
-    * [User to describe potential for automation: e.g., Using Snowflake Tasks to run SQL, or a scheduler like dbt Cloud, Airflow, or cron for dbt jobs.]
+* **Streamlit:** After the first version of the app was created, several changes were done through github. The app also is hosted in streamlit website, where it pulls the code from github. 
+* **Transformations using DBT (Refinement & Delivery):**
+    * The pipeline can be generated in each user's own schema in snowflake, running the dbt build command from the forked repository. If there is a modification the user will issue a pull request to update the main repository. Only using the dbt role DBT_PROD_ROLE it is possible to run the deployment environment on dbt, and this user has unique permissions granted to create and modify the production schemas generated on dbt. 
 
-## 11. Performance & Optimization Considerations?
+## 11. Performance & Optimization Considerations
 
 While this project is a demonstration, several aspects can be considered for performance in a production scenario:
 
-* **Warehouse Sizing:** Creating a dedicated virtual warehouse tailored to handle all workloads, including loading, transformation, and querying.
-* **Query Optimization:** Writing efficient SQL, leveraging Snowflake's query optimizer. For complex transformations, breaking them into smaller, manageable steps (CTEs or intermediate tables).
+* **Warehouse Sizing:** A dedecated warehouse -F1- was created for the project. It is used for direct database use and with dbt. It has the smallest size and it was not necessary to scale up.
 * **Clustering Keys:** For large tables in the `DELIVERY` or `REFINEMENT` layers, defining clustering keys on frequently filtered or joined columns can improve query performance.
-* **Materialization Strategy (dbt):** Choosing appropriate materializations (table, view, incremental) for dbt models based on size, query frequency, and refresh requirements.
+* **Materialization Strategy (dbt):** Choosing appropriate materializations (table, view, incremental) for dbt models: dbt generates views for the staging layer and tables for both refinement and delivery.
 
 ## 12. Security Considerations (Beyond Roles)
 
