@@ -11,17 +11,26 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+# Function to get config values (works both locally and on Streamlit Cloud)
+def get_config(key):
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        return st.secrets[key]
+    except:
+        # Fall back to environment variables (for local development)
+        return os.getenv(key)
 
 #config to connect SF
 conn = snowflake.connector.connect(
-    user=os.getenv('SNOWFLAKE_USER'),
-    password=os.getenv('SNOWFLAKE_PASSWORD'),
-    account=os.getenv('SNOWFLAKE_ACCOUNT'),
-    warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
-    database=os.getenv('SNOWFLAKE_DATABASE'),
-    schema=os.getenv('SNOWFLAKE_SCHEMA'),
-    role=os.getenv('SNOWFLAKE_ROLE')
-    )
+    user=get_config('SNOWFLAKE_USER'),
+    password=get_config('SNOWFLAKE_PASSWORD'),
+    account=get_config('SNOWFLAKE_ACCOUNT'),
+    warehouse=get_config('SNOWFLAKE_WAREHOUSE'),
+    database=get_config('SNOWFLAKE_DATABASE'),
+    schema=get_config('SNOWFLAKE_SCHEMA'),
+    role=get_config('SNOWFLAKE_ROLE')
+)
+
 
 def run_query(query):
     with conn.cursor() as cur:

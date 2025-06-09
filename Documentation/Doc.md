@@ -279,6 +279,7 @@ The data prepared in the `DELIVERY` layer is visualized and interacted with via 
     * Queries are executed against tables/views in the `F1_DB.DELIVERY` schema.
     * Using different APIs, we pull the circuit outline, information about it from wikipedia and displayed some visualizations
 * **Streamlit Code Snippets/Reference:** [Python code](/Streamlit_dashboard/f1.py)
+* **Streamlit web link:** Follow [this link]()
 
  
 ## 8. dbt (Data Build Tool) Implementation
@@ -320,6 +321,7 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
      models:
        F1_DBT_project:
         # Applies to all files under models/example/
+        # This configuration ensures that when deploying in the 'prod' environment, dbt will create the 3 layers/schemas 
          staging:
           +materialized: view
         refinement:
@@ -374,10 +376,9 @@ In addition to RBAC, other security aspects include:
 
 ## 14. Future Enhancements & Roadmap
 
-* Integration of additional F1 data sources (e.g., telemetry, tyre information, betting odds).
-* More advanced weather data integration (e.g., hourly forecasts leading up to a race).
+* Integration of additional F1 data sources and live data (e.g., telemetry, tyre information, betting odds).
 * Development of predictive models (e.g., race outcome prediction, qualifying performance).
-* Full automation of the ELT pipeline using an orchestrator.
+* Full automation of the ELT pipeline using an orchestrator (airflow) and a specific ingestor like 
 * Enhanced interactive visualizations and comparative analytics in Streamlit.
 
 ## 15. Glossary
@@ -394,7 +395,15 @@ In addition to RBAC, other security aspects include:
 
 ## Appendix A: Key SQL Scripts & Configurations
 
-[This section can contain or link to important SQL scripts (table creations, complex views not fully inline), dbt configuration files (`dbt_project.yml`, `profiles.yml`), or Snowpipe definitions if used.]
+* **DBT configuration:**
+[macro that generates the 3 schemas in prod](/macros/generate_prod_schemas.sql)
+[yml file for models-STAGING](/models/staging/schema.yml)
+[yml file for models-REFINEMENT](/models/refinement/schema.yml)
+[yml file for models-DELIVERY](/models/delivery/schema.yml)
+[yml file - sources](/models/sources.yml)
+
+
+
 
 ---
 
