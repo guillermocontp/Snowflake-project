@@ -289,6 +289,7 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
     * Part of the diagrams shown here as well as the list of tables are taking from DBT documentation.
     * The SQL code showed in this documentation comes from the DBT pipeline.
 
+
 flowchart TB
   subgraph database["❄️ F1_DB"]
     direction LR
