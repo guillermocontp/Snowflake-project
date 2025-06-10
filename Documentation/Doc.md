@@ -184,10 +184,14 @@ A role-based access control (RBAC) model was implemented to manage permissions w
 
     These five roles are intended for users actively involved in developing, maintaining, and utilizing the data pipeline. They have been granted comprehensive permissions to perform most operations within the `F1_DB` relevant to their functions (e.g., read/write on schemas, usage on warehouses). [SQL code](/Additional%20code/Database_creation_&_role_access.sql)
 
+![Schema Roles in Snowflake](/pictures/Snowflake_RBAC.png)
+
 * **Dashboard Consumer Role:**
     * `DASHBOARD_ROLE`: This role has restricted, read-only access, primarily to objects within the `DELIVERY` schema. This is intended for users who only consume the final dashboards and reports, ensuring they cannot modify underlying data or structures. [SQL code](/Additional%20code/Dashboard_access_role.sql)
-
-
+    * `DASHBOARD_VIEWER`: This role is limited to view-only access through dashboards, ensuring no modification or direct interaction with underlying data.[SQL code](/Additional%20code/Dashboard_access_role.sql)
+* **DBT Production role:**
+    * `DBT_PROD_ROLE`: This role is intended to create and modify the dbt schemas in production. This is the only role that can deploy the models in production through dbt, as the configuration of the deployment environment uses this role only.  [SQL code](/Additional%20code/dbt_prod_role.sql)
+    
 ## 4. Data Loading (Staging Layer)
 
 Once the raw data files (CSVs, JSON) were extracted, they were loaded into the `STAGING` schema in `F1_DB`.
@@ -266,7 +270,7 @@ The `DELIVERY` schema houses the final datasets optimized for consumption by das
 * **Purpose:** The tables are denormalized and aggregated to provide fast and easy access to information required for specific reports or analyses. So far there is one table where the information is extracted from.
 * **Key Tables/Views for Dashboards:**
     
-    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information from `F1_DB.DELIVERY.DASHBOARD` table.[SQL code](/models/delivery/reporting_table.sql) is this the correct table?
+    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information from `F1_DB.DELIVERY.DASHBOARD` table.[SQL code](/models/delivery/reporting_table.sql)
     * `Streamlit visualization`: A streamlit app was created to use the data, and present information about the results in a specific circuit a given year. 
    
 
@@ -288,14 +292,69 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
 * **Scope of dbt Use:** dbt was used to replicate the whole pipeline, in a different schema(each DBT user has its own schema).
     * Part of the diagrams shown here as well as the list of tables are taking from DBT documentation.
     * The SQL code showed in this documentation comes from the DBT pipeline.
+
+```mermaid
+flowchart TB
+  subgraph database["❄️ F1_DB"]
+    direction LR
+    sources@{ shape: docs, label: "📊 SOURCES<br/>
+    (CSV, JSON, Marketplace)"}
+ 
+
+    subgraph ci["🛠️ Development & CI/CD"]
+        direction TB
+        github["🐙 GitHub<br/>(Version Control)"]
+        dbt["🔨 dbt<br/>"]
+        github --- dbt
+    end
+    
+    subgraph schemas["🏗️  Schemas"]
+        direction LR
+        
+        dbt_raw@{ shape: lin-cyl, label: "🚪 DBT_RAW <br/>Staging Layer<br/>" }
+             
+        dbt_refinement@{ shape: lin-cyl, label: "⚙️ DBT_REFINEMENT <br/>Processing Layer<br/>" }
+        
+        dbt_delivery@{ shape: lin-cyl, label: "📈 DBT_DELIVERY <br/>Analytics Layer<br/>" }
+        dbt_raw --> dbt_refinement
+        dbt_refinement --> dbt_delivery
+    end
+    
+    sources <--> ci
+    ci <--> schemas
+    sources --> schemas
+   
+  end
+  
+  
+  
+  %% Styling
+  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
+  
+  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
+  
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style dbt_raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+  style dbt_refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
+  style dbt_delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
+  style github fill:#f8f8f8,stroke:#555555
+  style dbt fill:#f8f8f8,stroke:#555555
+
+```
+    
 * **Key dbt Features Leveraged:**
     * **Models:** SQL `SELECT` statements defining tables/views.
-    * **Sources:** Declaring raw data tables from the `STAGING` schema.
+    * **Sources:** Declaring raw data tables from the `STAGING` schema as `SOURCES`.
     * **Tests:** Schema tests (unique, not_null) performed to check data consistency.
     * **Documentation:** Generation of project documentation and data lineage graphs used also in this documentation.
     
 * **dbt Project Structure & Documentation:**
-    * The DBT project is similarly structured as the original one. This is the YML file of the project. Remaining files are found within the github repo. The configuration is set to generate views for the raw data and tables for the refinement and delivery schema.
+    * The DBT project is similarly structured as the original one. There are 2 environments: 
+        * `Dev` which allows each user to generate all of the tables/views in their own schema. This environment uses each user's branch from the main repo. The `Prod` environment generates 3 schemas (`DBT_staging`, `DBT_refinement`, `DBT_delivery`) upon deployment, as the original project. 
+        * The `Prod` environment can only be deployed through the `DBT_PROD_ROLE` that has restricted access and will deploy from the main repo. Since we lack an organization repo, the main repo is from one of the users, but we tried to work as closely as an organization would.
+    
+    * This is the YML file of the project. Remaining files are found in the annex. The configuration is set to generate views for the raw data and tables for the refinement and delivery schema.
    
     ```yaml
     # name: 'F1_DBT_project'
@@ -319,7 +378,8 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
     
      models:
        F1_DBT_project:
-        # Applies to all files under models/example/
+        
+        # This configuration ensures that when deploying in the 'prod' environment, dbt will create the 3 layers/schemas
          staging:
           +materialized: view
         refinement:
@@ -327,7 +387,7 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
         delivery: 
           +materialized: table
     ```
-* **Observations/Benefits Noted:** [User to add insights, e.g., improved modularity, automated testing, version control benefits, easier documentation and lineage tracking.]
+
 
 ## 9. Data Quality & Testing
 
@@ -340,23 +400,24 @@ Ensuring data accuracy and reliability is critical. Testing was done using DBT's
     * schema tests (`unique`, `not_null`).
 
 
-## 10. Orchestration?
+## 10. Collaboration
 
-The pipeline's execution is managed to ensure timely data updates.
+The pipeline's code is managed through this repo. We have collaborated adding/modifying parts of the code. This repo is connected to dbt, which uses it to generate the production models. 
 
-* **Loading (Staging):** [User to describe: e.g., Manual for this demo, or scheduled via external scripts/Snowflake Tasks if automated.]
-* **Transformations (Refinement & Delivery):**
-    * [User to describe: e.g., Manual execution of SQL scripts/dbt commands for this demo.]
-    * [User to describe potential for automation: e.g., Using Snowflake Tasks to run SQL, or a scheduler like dbt Cloud, Airflow, or cron for dbt jobs.]
+![Github Colaboration](/pictures/GitHub_flow.png)
+![Collaborators](/pictures/git_contributors.png)
 
-## 11. Performance & Optimization Considerations?
+* **Streamlit:** After the first version of the app was created, several changes were done through github. The app also is hosted in streamlit website, where it pulls the code from github. 
+* **Transformations using DBT (Refinement & Delivery):**
+    * The pipeline can be generated in each user's own schema in snowflake, running the dbt build command from the forked repository. If there is a modification the user will issue a pull request to update the main repository. Only using the dbt role DBT_PROD_ROLE it is possible to run the deployment environment on dbt, and this user has unique permissions granted to create and modify the production schemas generated on dbt. 
+
+## 11. Performance & Optimization Considerations
 
 While this project is a demonstration, several aspects can be considered for performance in a production scenario:
 
-* **Warehouse Sizing:** Creating a dedicated virtual warehouse tailored to handle all workloads, including loading, transformation, and querying.
-* **Query Optimization:** Writing efficient SQL, leveraging Snowflake's query optimizer. For complex transformations, breaking them into smaller, manageable steps (CTEs or intermediate tables).
+* **Warehouse Sizing:** A dedecated warehouse -F1- was created for the project. It is used for direct database use and with dbt. It has the smallest size and it was not necessary to scale up.
 * **Clustering Keys:** For large tables in the `DELIVERY` or `REFINEMENT` layers, defining clustering keys on frequently filtered or joined columns can improve query performance.
-* **Materialization Strategy (dbt):** Choosing appropriate materializations (table, view, incremental) for dbt models based on size, query frequency, and refresh requirements.
+* **Materialization Strategy (dbt):** Choosing appropriate materializations (table, view, incremental) for dbt models: dbt generates views for the staging layer and tables for both refinement and delivery.
 
 ## 12. Security Considerations (Beyond Roles)
 
@@ -380,7 +441,12 @@ In addition to RBAC, other security aspects include:
 
 ## Appendix A: Key SQL Scripts & Configurations
 
-[This section can contain or link to important SQL scripts (table creations, complex views not fully inline), dbt configuration files (`dbt_project.yml`, `profiles.yml`), or Snowpipe definitions if used.]
+**DBT configuration:**
+* [macro that generates the 3 schemas in prod](/macros/generate_prod_schemas.sql)
+* [yml file for models-STAGING](/models/staging/schema.yml)
+* [yml file for models-REFINEMENT](/models/refinement/schema.yml)
+* [yml file for models-DELIVERY](/models/delivery/schema.yml)
+* [yml file - sources](/models/sources.yml)
 
 ---
 
