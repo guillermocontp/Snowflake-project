@@ -405,6 +405,7 @@ Ensuring data accuracy and reliability is critical. Testing was done using DBT's
 The pipeline's code is managed through this repo. We have collaborated adding/modifying parts of the code. This repo is connected to dbt, which uses it to generate the production models. 
 
 ![Github Colaboration](/pictures/GitHub_flow.png)
+![Collaborators](/pictures/git_contributors.png)
 
 * **Streamlit:** After the first version of the app was created, several changes were done through github. The app also is hosted in streamlit website, where it pulls the code from github. 
 * **Transformations using DBT (Refinement & Delivery):**
