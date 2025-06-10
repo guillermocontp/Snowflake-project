@@ -14,8 +14,6 @@ sources:
             description: lap times in F1
           - name: races
             description: races in F1
-          - name: raw_lap_times_json_staging
-            description: lap_times per circuit and driver in JSON
           - name: results
             description: results of F1 races per driver and year
           - name: status
