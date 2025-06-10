@@ -4,7 +4,7 @@ models:
   - name: circuits_stg
     description: "Staging model for circuits data. Contains information about each racing circuit."
     columns:
-      - name: circuit_id 
+      - name: circuitid 
         description: "The unique identifier for each circuit."
         tests:
           - unique
@@ -13,7 +13,7 @@ models:
   - name: drivers_stg
     description: "Staging model for drivers data. Contains information about each driver."
     columns:
-      - name: driver_id 
+      - name: driverid 
         description: "The unique identifier for each driver."
         tests:
           - unique
@@ -22,16 +22,16 @@ models:
   - name: lap_times_stg
     description: "Staging model for lap times data. Contains individual lap time records."
     columns:
-      - name: lap_time_id 
+      - name: RaceID_key
         description: "A unique identifier for each lap time entry. (Adapt if using a composite key)."
         tests:
-          - unique
+          
           - not_null
 
   - name: status_mapping
     description: "Dimension model for mapping race completion status codes to human-readable descriptions."
     columns:
-      - name: status_id 
+      - name: statusid 
         description: "The unique identifier for each status type."
         tests:
           - unique
@@ -40,7 +40,7 @@ models:
   - name: races_stg
     description: "Staging model for races data. Contains information about each race event."
     columns:
-      - name: race_id 
+      - name: raceid 
         description: "The unique identifier for each race."
         tests:
           - unique
@@ -49,7 +49,7 @@ models:
   - name: results_stg
     description: "Staging model for race results data. Contains the final results for each driver in each race."
     columns:
-      - name: result_id 
+      - name: resultid 
         description: "The unique identifier for each race result entry."
         tests:
           - unique
