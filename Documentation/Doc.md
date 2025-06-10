@@ -184,8 +184,11 @@ A role-based access control (RBAC) model was implemented to manage permissions w
 
     These five roles are intended for users actively involved in developing, maintaining, and utilizing the data pipeline. They have been granted comprehensive permissions to perform most operations within the `F1_DB` relevant to their functions (e.g., read/write on schemas, usage on warehouses). [SQL code](/Additional%20code/Database_creation_&_role_access.sql)
 
+![Schema Roles in Snowflake](/pictures/Snowflake_RBAC.png)
+
 * **Dashboard Consumer Role:**
     * `DASHBOARD_ROLE`: This role has restricted, read-only access, primarily to objects within the `DELIVERY` schema. This is intended for users who only consume the final dashboards and reports, ensuring they cannot modify underlying data or structures. [SQL code](/Additional%20code/Dashboard_access_role.sql)
+    * `DASHBOARD_VIEWER`: This role is limited to view-only access through dashboards, ensuring no modification or direct interaction with underlying data.[SQL code](/Additional%20code/Dashboard_access_role.sql)
 
 
 ## 4. Data Loading (Staging Layer)
@@ -395,6 +398,8 @@ Ensuring data accuracy and reliability is critical. Testing was done using DBT's
 ## 10. Collaboration
 
 The pipeline's code is managed through this repo. We have collaborated adding/modifying parts of the code. This repo is connected to dbt, which uses it to generate the production models. 
+
+![Github Colaboration](/pictures/GitHub_flow.png)
 
 * **Streamlit:** After the first version of the app was created, several changes were done through github. The app also is hosted in streamlit website, where it pulls the code from github. 
 * **Transformations using DBT (Refinement & Delivery):**
