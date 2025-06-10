@@ -8,6 +8,7 @@ import json
 import numpy as np
 import os
 from dotenv import load_dotenv
+import os
 
 # Load environment variables from .env file
 load_dotenv()
@@ -30,14 +31,7 @@ conn = snowflake.connector.connect(
     schema=get_config('SNOWFLAKE_SCHEMA'),
     role=get_config('SNOWFLAKE_ROLE')
 )
-import os
-st.write("**Repository Debug Info:**")
-st.write(f"Current working directory: {os.getcwd()}")
-st.write(f"Files in current directory: {os.listdir('.')}")
-if os.path.exists('tracks'):
-    st.write(f"Files in tracks folder: {os.listdir('tracks')}")
-else:
-    st.write("❌ tracks folder not found")
+
 # defining functions
 def display_driver_image(driver_name, width=400):
     
@@ -51,7 +45,25 @@ def display_driver_image(driver_name, width=400):
     
     # Display the image
     st.image(image_url, caption=driver_name, width=width)
-    
+
+# When running locally, the GeoJSON files are in the 'tracks' directory.
+# When running on Streamlit Cloud, the GeoJSON files are in the 'Streamlit_dashboard/tracks' directory!
+# This function checks the current directory and returns the correct path.
+
+def get_file_path(filename):
+    """Get the correct file path for both local and cloud environments"""
+    # Check if we're in the Streamlit_dashboard directory (local)
+    if os.path.exists(filename):
+        return filename
+    # Check if we're in the root directory (cloud)
+    elif os.path.exists(f"Streamlit_dashboard/{filename}"):
+        return f"Streamlit_dashboard/{filename}"
+    else:
+        return filename  # fallback
+
+
+
+
 def display_geojson_map(geojson_filename, map_width=400, map_height=400, initial_zoom=13, initial_pitch=0):
     """
     Loads a GeoJSON file and displays it as a path on a Pydeck map.
@@ -64,7 +76,11 @@ def display_geojson_map(geojson_filename, map_width=400, map_height=400, initial
         initial_pitch (int): Initial pitch of the map.
     """
     try:
-        with open(geojson_filename) as f:
+
+        # Get the correct file path
+        full_path = get_file_path(geojson_filename)
+        
+        with open(full_path) as f:
             geojson_data = json.load(f)
 
         if geojson_data.get('features') and \
@@ -115,7 +131,7 @@ def display_geojson_map(geojson_filename, map_width=400, map_height=400, initial
         else:
             st.write(f"Could not find LineString coordinates in GeoJSON '{geojson_filename}' or the structure is not as expected.")
     except FileNotFoundError:
-        st.error(f"Error: GeoJSON file not found at '{geojson_filename}'")
+        st.error(f"Error: GeoJSON file not found at '{full_path}'")
     except Exception as e:
         st.error(f"An error occurred while processing '{geojson_filename}': {e}")
 
