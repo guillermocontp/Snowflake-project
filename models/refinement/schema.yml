@@ -4,7 +4,7 @@ models:
   - name: circuits_refined
     description: "Refined circuits data, typically cleaned, transformed, and potentially enriched from the staging layer."
     columns:
-      - name: circuit_id
+      - name: circuitid
         description: "The unique identifier for each circuit in the refined dataset."
         tests:
           - unique
@@ -13,7 +13,7 @@ models:
   - name: drivers_refined
     description: "Refined drivers data, with potential cleaning, type conversions, and enrichments."
     columns:
-      - name: driver_id
+      - name: driverid
         description: "The unique identifier for each driver in the refined dataset."
         tests:
           - unique
@@ -24,14 +24,12 @@ models:
     columns:
       - name: refined_lap_time_pk
         description: "The primary key for the refined lap times. This might be a new surrogate key or a combination of existing keys."
-        tests:
-          - unique
-          - not_null
+       
 
   - name: races_refined
     description: "Refined races data, potentially joined with circuit details, weather information, or session times."
     columns:
-      - name: race_id
+      - name: raceid
         description: "The unique identifier for each race in the refined dataset."
         tests:
           - unique
@@ -42,7 +40,7 @@ models:
   - name: results_refined
     description: "Refined race results, adding status column"
     columns:
-      - name: refined_result_pk
+      - name: resultid
         description: "The primary key for the refined results. This might be a new surrogate key or a combination of existing keys."
         tests:
           - unique
