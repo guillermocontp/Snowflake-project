@@ -1,0 +1,44 @@
+flowchart TB
+  subgraph database["❄️ F1_DB"]
+    direction TB
+    
+    sources["📊 Stage<br/>
+    (CSV, JSON, Marketplace)"]
+    
+    subgraph schemas["🏗️  Schemas"]
+        direction TB
+        
+        raw@{ shape: lin-cyl, label: "🚪 RAW <br/>Staging Layer<br/>" }
+             
+        refinement@{ shape: lin-cyl, label: "⚙️ REFINEMENT <br/>Processing Layer<br/>" }
+        
+        delivery@{ shape: lin-cyl, label: "📈 DELIVERY <br/>Analytics Layer<br/>" }
+        raw --> refinement
+        refinement --> delivery
+    end
+    
+    sources --> raw
+    delivery --> applications["🖥️ Applications<br/>(Streamlit & Snowsight)"]
+    
+    subgraph applications["🖥️ Visualizations"]
+        direction LR
+        streamlit@{ shape: curv-trap, label: "🎯 Streamlit" }
+        snowsight@{ shape: curv-trap, label: "👁️ Snowsight<br/>Dashboards" }
+        
+        streamlit --- snowsight
+    end
+  end
+  
+  
+  
+  %% Styling
+  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
+  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+  
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+  style refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
+  style delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
+  style streamlit fill:#fffce6,stroke:#ff9900
+  style snowsight fill:#fffce6,stroke:#ff9900
