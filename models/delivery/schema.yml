@@ -1,18 +1,8 @@
 version: 2
 
 models:
-  - name: tyres_delivery
-    description: final version of the tyres dataset, for dashboard purposes.
-    columns:
-      - name: circuit_id  
-        description: "The unique identifier for each circuit in the refined dataset."
-        
+     
 
-  - name: weather_delivery
-    description: final weather table for dashboard purposes.
-    columns:
-      - name: driver_id 
-        description: "The unique identifier for each driver in the refined dataset."
 
   - name: reporting_table
     description: final weather table for dashboard purposes.
