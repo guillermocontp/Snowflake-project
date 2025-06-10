@@ -189,8 +189,9 @@ A role-based access control (RBAC) model was implemented to manage permissions w
 * **Dashboard Consumer Role:**
     * `DASHBOARD_ROLE`: This role has restricted, read-only access, primarily to objects within the `DELIVERY` schema. This is intended for users who only consume the final dashboards and reports, ensuring they cannot modify underlying data or structures. [SQL code](/Additional%20code/Dashboard_access_role.sql)
     * `DASHBOARD_VIEWER`: This role is limited to view-only access through dashboards, ensuring no modification or direct interaction with underlying data.[SQL code](/Additional%20code/Dashboard_access_role.sql)
-
-
+* **DBT Production role:**
+    * `DBT_PROD_ROLE`: This role is intended to create and modify the dbt schemas in production. This is the only role that can deploy the models in production through dbt, as the configuration of the deployment environment uses this role only.  [SQL code](/Additional%20code/dbt_prod_role.sql)
+    
 ## 4. Data Loading (Staging Layer)
 
 Once the raw data files (CSVs, JSON) were extracted, they were loaded into the `STAGING` schema in `F1_DB`.
@@ -269,7 +270,7 @@ The `DELIVERY` schema houses the final datasets optimized for consumption by das
 * **Purpose:** The tables are denormalized and aggregated to provide fast and easy access to information required for specific reports or analyses. So far there is one table where the information is extracted from.
 * **Key Tables/Views for Dashboards:**
     
-    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information from `F1_DB.DELIVERY.DASHBOARD` table.[SQL code](/models/delivery/reporting_table.sql) is this the correct table?
+    * `F1_DB.DELIVERY.DASHBOARD`: Contains detailed race results joined with driver, lap_times, circuit, tyre and weather information from `F1_DB.DELIVERY.DASHBOARD` table.[SQL code](/models/delivery/reporting_table.sql)
     * `Streamlit visualization`: A streamlit app was created to use the data, and present information about the results in a specific circuit a given year. 
    
 
@@ -349,7 +350,11 @@ flowchart TB
     * **Documentation:** Generation of project documentation and data lineage graphs used also in this documentation.
     
 * **dbt Project Structure & Documentation:**
-    * The DBT project is similarly structured as the original one. This is the YML file of the project. Remaining files are found in the annex. The configuration is set to generate views for the raw data and tables for the refinement and delivery schema.
+    * The DBT project is similarly structured as the original one. There are 2 environments: 
+        * `Dev` which allows each user to generate all of the tables/views in their own schema. This environment uses each user's branch from the main repo. The `Prod` environment generates 3 schemas (`DBT_staging`, `DBT_refinement`, `DBT_delivery`) upon deployment, as the original project. 
+        * The `Prod` environment can only be deployed through the `DBT_PROD_ROLE` that has restricted access and will deploy from the main repo. Since we lack an organization repo, the main repo is from one of the users, but we tried to work as closely as an organization would.
+    
+    * This is the YML file of the project. Remaining files are found in the annex. The configuration is set to generate views for the raw data and tables for the refinement and delivery schema.
    
     ```yaml
     # name: 'F1_DBT_project'
@@ -382,7 +387,7 @@ flowchart TB
         delivery: 
           +materialized: table
     ```
-* **Observations/Benefits Noted:** [User to add insights, e.g., improved modularity, automated testing, version control benefits, easier documentation and lineage tracking.]
+
 
 ## 9. Data Quality & Testing
 
@@ -435,12 +440,12 @@ In addition to RBAC, other security aspects include:
 
 ## Appendix A: Key SQL Scripts & Configurations
 
-* **DBT configuration:**
-[macro that generates the 3 schemas in prod](/macros/generate_prod_schemas.sql)
-[yml file for models-STAGING](/models/staging/schema.yml)
-[yml file for models-REFINEMENT](/models/refinement/schema.yml)
-[yml file for models-DELIVERY](/models/delivery/schema.yml)
-[yml file - sources](/models/sources.yml)
+**DBT configuration:**
+* [macro that generates the 3 schemas in prod](/macros/generate_prod_schemas.sql)
+* [yml file for models-STAGING](/models/staging/schema.yml)
+* [yml file for models-REFINEMENT](/models/refinement/schema.yml)
+* [yml file for models-DELIVERY](/models/delivery/schema.yml)
+* [yml file - sources](/models/sources.yml)
 
 ---
 
