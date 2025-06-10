@@ -1,54 +1,62 @@
-
 version: 2
 
 models:
   - name: circuits_stg
     description: "Staging model for circuits data. Contains information about each racing circuit."
     columns:
-      - name: circuit_id # Example: Replace with actual primary key column name
+      - name: circuit_id 
         description: "The unique identifier for each circuit."
-       
+        tests:
+          - unique
+          - not_null
 
   - name: drivers_stg
     description: "Staging model for drivers data. Contains information about each driver."
     columns:
-      - name: driver_id # Example: Replace with actual primary key column name
+      - name: driver_id 
         description: "The unique identifier for each driver."
-    
+        tests:
+          - unique
+          - not_null
 
   - name: lap_times_stg
     description: "Staging model for lap times data. Contains individual lap time records."
     columns:
-      - name: lap_time_id # Example: Or could be a composite key like [race_id, driver_id, lap_number]
+      - name: lap_time_id 
         description: "A unique identifier for each lap time entry. (Adapt if using a composite key)."
-     
+        tests:
+          - unique
+          - not_null
 
   - name: status_mapping
     description: "Dimension model for mapping race completion status codes to human-readable descriptions."
     columns:
-      - name: status_id # Example: Replace with actual primary key column name
+      - name: status_id 
         description: "The unique identifier for each status type."
-       
+        tests:
+          - unique
+          - not_null     
 
   - name: races_stg
     description: "Staging model for races data. Contains information about each race event."
     columns:
-      - name: race_id # Example: Replace with actual primary key column name
+      - name: race_id 
         description: "The unique identifier for each race."
-        # Add tests here if needed, e.g.:
-        # tests:
-        #   - unique
-        #   - not_null
+        tests:
+          - unique
+          - not_null
 
   - name: results_stg
     description: "Staging model for race results data. Contains the final results for each driver in each race."
     columns:
-      - name: result_id # Example: Replace with actual primary key column name
+      - name: result_id 
         description: "The unique identifier for each race result entry."
-        # Add tests here if needed
+        tests:
+          - unique
+          - not_null
 
-  - name: _weather_cities_stg # Note: dbt model names typically don't start with underscores, but it's allowed.
-    description: "Weather data from Snowflake marketplace from LLC: frostbyte" # Corrected "Weatehr"
+  - name: _weather_cities_stg
+    description: "Weather data from Snowflake marketplace from LLC: frostbyte"
     columns:
       - name: city
         description: "The primary key for this table"
@@ -56,26 +64,26 @@ models:
           - unique
           - not_null
 
-  - name: _weather_20_24_stg # Note on underscore prefix
+  - name: _weather_20_24_stg
     description: "Weather data for all races 2020-2024 from FastF1 API"
     columns:
       - name: roundnumber
         description: "One of the primary key for this table"
         tests:
-          - unique # If 'roundnumber' alone isn't unique, consider a composite key test or remove this 'unique'
+          - unique
           - not_null
       - name: year
         description: "One of the primary key for this table"
         tests:
           - not_null
 
-  - name: _tyres_only_stg # Note on underscore prefix
-    description: "Tyres data for all races 2020-2024 from FastF1 API" # Corrected "Tyers"
+  - name: _tyres_only_stg
+    description: "Tyres data for all races 2020-2024 from FastF1 API"
     columns:
       - name: roundnumber
         description: "One of the primary key for this table"
         tests:
-          - unique # If 'roundnumber' alone isn't unique, consider a composite key test or remove this 'unique'
+          - unique
           - not_null
       - name: year
         description: "One of the primary key for this table"
