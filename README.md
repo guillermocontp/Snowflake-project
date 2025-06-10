@@ -16,3 +16,4 @@ Strong RBAC Model: Ensuring secure separation between development and data consu
 dbt-Powered Transformations: For modularity, reusability, and built-in testing.
 Lightweight Analytics: Accessible via Snowsight and Streamlit.
 Real-World ELT Best Practices: Demonstrated end-to-end on Snowflake.
+Streamlit Application link: https://app-project-f1.streamlit.app/
