@@ -1,0 +1,47 @@
+flowchart TB
+  subgraph database["❄️ F1_DB"]
+    direction LR
+    sources@{ shape: docs, label: "📊 SOURCES<br/>
+    (CSV, JSON, Marketplace)"}
+ 
+
+    subgraph ci["🛠️ Development & CI/CD"]
+        direction TB
+        github["🐙 GitHub<br/>(Version Control)"]
+        dbt["🔨 dbt<br/>"]
+        github --- dbt
+    end
+    
+    subgraph schemas["🏗️  Schemas"]
+        direction LR
+        
+        dbt_raw@{ shape: lin-cyl, label: "🚪 DBT_RAW <br/>Staging Layer<br/>" }
+             
+        dbt_refinement@{ shape: lin-cyl, label: "⚙️ DBT_REFINEMENT <br/>Processing Layer<br/>" }
+        
+        dbt_delivery@{ shape: lin-cyl, label: "📈 DBT_DELIVERY <br/>Analytics Layer<br/>" }
+        dbt_raw --> dbt_refinement
+        dbt_refinement --> dbt_delivery
+    end
+    
+    sources <--> ci
+    ci <--> schemas
+    sources --> schemas
+   
+  end
+  
+  
+  
+  %% Styling
+  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
+  
+  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
+  
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style dbt_raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
+  style dbt_refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
+  style dbt_delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
+  style github fill:#f8f8f8,stroke:#555555
+  style dbt fill:#f8f8f8,stroke:#555555
+

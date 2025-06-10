@@ -19,60 +19,7 @@ weather data to create a comprehensive analytical environment.
 In the delivery stage, data is presented as dashboards using the built in snowsight capabilites to create dashboards 
 and streamlit:
 
-```mermaid
-flowchart LR
-  subgraph pipeline["🏎️ F1 Data Pipeline"]
-    direction TB
-    
-    subgraph sources["📊 Data Sources"]
-        direction LR
-        csv@{ shape: docs, label: "📄 CSV Files" }
-        json@{ shape: docs, label: "📋 JSON Files" }
-        
-        marketplace@{ shape: bow-rect, label: "🏪 Snowflake<br/>Marketplace" }
-        
-        csv --- json --- marketplace
-    end
-    
-    sources --> database@{ shape: cyl, label: "
-    ❄️ F1_DB <br/>
-    
-    " }
-
-    database --> applications["🖥️ Applications"]
-    
-    subgraph applications["🖥️ Applications"]
-        direction LR
-        
-        streamlit["🎯 Streamlit<br/>Dashboard"]
-        snowsight["👁️ Snowsight<br/>Dashboards"]
-        streamlit --- snowsight
-    end
-  end
-  
-  subgraph ci["🛠️ Development & CI/CD"]
-    direction TB
-    github["🐙 GitHub<br/>(Version Control)"]
-    dbt["🔨 dbt<br/>(Data Build Tool)"]
-    github --- dbt
-  end
-  
-  pipeline <-.-> ci
-  
-  %% Styling
-  style pipeline fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
-  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
-  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
-  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
-  
-  style csv fill:#fff5e6,stroke:#ff6600
-  style json fill:#fff5e6,stroke:#ff6600
-  style marketplace fill:#fff5e6,stroke:#ff6600
-  style streamlit fill:#fffce6,stroke:#ff9900
-  style snowsight fill:#fffce6,stroke:#ff9900
-  style github fill:#f8f8f8,stroke:#555555
-  style dbt fill:#f8f8f8,stroke:#555555
-```
+![F1 data pipeline](/pictures/dbf1_pipeline.png)
 
 ## 2. Data Extraction
 
@@ -105,54 +52,7 @@ A new database named `F1_DB` was created to house all data, schemas, and objects
 ### 3.2. Schema Architecture (Data Layers)
 The `F1_DB` database is organized into three distinct schemas, representing the different stages of the data lifecycle:
 
-```mermaid
-flowchart TB
-  subgraph database["❄️ F1_DB"]
-    direction TB
-    
-    sources["📊 Stage<br/>
-    (CSV, JSON, Marketplace)"]
-    
-    subgraph schemas["🏗️  Schemas"]
-        direction TB
-        
-        raw@{ shape: lin-cyl, label: "🚪 RAW <br/>Staging Layer<br/>" }
-             
-        refinement@{ shape: lin-cyl, label: "⚙️ REFINEMENT <br/>Processing Layer<br/>" }
-        
-        delivery@{ shape: lin-cyl, label: "📈 DELIVERY <br/>Analytics Layer<br/>" }
-        raw --> refinement
-        refinement --> delivery
-    end
-    
-    sources --> raw
-    delivery --> applications["🖥️ Applications<br/>(Streamlit & Snowsight)"]
-    
-    subgraph applications["🖥️ Visualizations"]
-        direction LR
-        streamlit@{ shape: curv-trap, label: "🎯 Streamlit" }
-        snowsight@{ shape: curv-trap, label: "👁️ Snowsight<br/>Dashboards" }
-        
-        streamlit --- snowsight
-    end
-  end
-  
-  
-  
-  %% Styling
-  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
-  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
-  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
-  
-  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
-  style raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
-  style refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
-  style delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
-  style streamlit fill:#fffce6,stroke:#ff9900
-  style snowsight fill:#fffce6,stroke:#ff9900
-```
-
-
+![F1_db schema architecture](/pictures/f1db_schemas.png)
 
 
 * **`STAGING` Schema (Staging Layer):**
@@ -293,55 +193,8 @@ In parallel to direct SQL-based transformations, dbt was utilized to test its fu
     * Part of the diagrams shown here as well as the list of tables are taking from DBT documentation.
     * The SQL code showed in this documentation comes from the DBT pipeline.
 
-```mermaid
-flowchart TB
-  subgraph database["❄️ F1_DB"]
-    direction LR
-    sources@{ shape: docs, label: "📊 SOURCES<br/>
-    (CSV, JSON, Marketplace)"}
- 
+![dbt workflow](/pictures/dbt_workflow.png)
 
-    subgraph ci["🛠️ Development & CI/CD"]
-        direction TB
-        github["🐙 GitHub<br/>(Version Control)"]
-        dbt["🔨 dbt<br/>"]
-        github --- dbt
-    end
-    
-    subgraph schemas["🏗️  Schemas"]
-        direction LR
-        
-        dbt_raw@{ shape: lin-cyl, label: "🚪 DBT_RAW <br/>Staging Layer<br/>" }
-             
-        dbt_refinement@{ shape: lin-cyl, label: "⚙️ DBT_REFINEMENT <br/>Processing Layer<br/>" }
-        
-        dbt_delivery@{ shape: lin-cyl, label: "📈 DBT_DELIVERY <br/>Analytics Layer<br/>" }
-        dbt_raw --> dbt_refinement
-        dbt_refinement --> dbt_delivery
-    end
-    
-    sources <--> ci
-    ci <--> schemas
-    sources --> schemas
-   
-  end
-  
-  
-  
-  %% Styling
-  style database fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
-  style schemas fill:#f0f7ff,stroke:#0055cc,stroke-width:2px
-  
-  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
-  
-  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
-  style dbt_raw fill:#e6ffe6,stroke:#00aa00,stroke-width:2px
-  style dbt_refinement fill:#ffe6f0,stroke:#cc0066,stroke-width:2px
-  style dbt_delivery fill:#f0e6ff,stroke:#6600cc,stroke-width:2px
-  style github fill:#f8f8f8,stroke:#555555
-  style dbt fill:#f8f8f8,stroke:#555555
-
-```
     
 * **Key dbt Features Leveraged:**
     * **Models:** SQL `SELECT` statements defining tables/views.

@@ -1,0 +1,52 @@
+flowchart LR
+  subgraph pipeline["🏎️ F1 Data Pipeline"]
+    direction TB
+    
+    subgraph sources["📊 Data Sources"]
+        direction LR
+        csv@{ shape: docs, label: "📄 CSV Files" }
+        json@{ shape: docs, label: "📋 JSON Files" }
+        
+        marketplace@{ shape: bow-rect, label: "🏪 Snowflake<br/>Marketplace" }
+        
+        csv --- json --- marketplace
+    end
+    
+    sources --> database@{ shape: cyl, label: "
+    ❄️ F1_DB <br/>
+    
+    " }
+
+    database --> applications["🖥️ Applications"]
+    
+    subgraph applications["🖥️ Applications"]
+        direction LR
+        
+        streamlit["🎯 Streamlit<br/>Dashboard"]
+        snowsight["👁️ Snowsight<br/>Dashboards"]
+        streamlit --- snowsight
+    end
+  end
+  
+  subgraph ci["🛠️ Development & CI/CD"]
+    direction TB
+    github["🐙 GitHub<br/>(Version Control)"]
+    dbt["🔨 dbt<br/>(Data Build Tool)"]
+    github --- dbt
+  end
+  
+  pipeline <-.-> ci
+  
+  %% Styling
+  style pipeline fill:#e6f3ff,stroke:#0066cc,stroke-width:3px
+  style sources fill:#fff2e6,stroke:#ff8800,stroke-width:2px
+  style applications fill:#fff9e6,stroke:#ffaa00,stroke-width:2px
+  style ci fill:#f5f5f5,stroke:#666666,stroke-width:2px,stroke-dasharray: 5 5
+  
+  style csv fill:#fff5e6,stroke:#ff6600
+  style json fill:#fff5e6,stroke:#ff6600
+  style marketplace fill:#fff5e6,stroke:#ff6600
+  style streamlit fill:#fffce6,stroke:#ff9900
+  style snowsight fill:#fffce6,stroke:#ff9900
+  style github fill:#f8f8f8,stroke:#555555
+  style dbt fill:#f8f8f8,stroke:#555555
