@@ -30,7 +30,14 @@ conn = snowflake.connector.connect(
     schema=get_config('SNOWFLAKE_SCHEMA'),
     role=get_config('SNOWFLAKE_ROLE')
 )
-
+import os
+st.write("**Repository Debug Info:**")
+st.write(f"Current working directory: {os.getcwd()}")
+st.write(f"Files in current directory: {os.listdir('.')}")
+if os.path.exists('tracks'):
+    st.write(f"Files in tracks folder: {os.listdir('tracks')}")
+else:
+    st.write("❌ tracks folder not found")
 # defining functions
 def display_driver_image(driver_name, width=400):
     
@@ -72,6 +79,7 @@ def display_geojson_map(geojson_filename, map_width=400, map_height=400, initial
 
             if 'bbox' in geojson_data:
                 bbox = geojson_data['bbox']
+
                 center_lon = (bbox[0] + bbox[2]) / 2
                 center_lat = (bbox[1] + bbox[3]) / 2
             elif coordinates and len(coordinates) > 0 and len(coordinates[0]) == 2: # Check if coordinates are valid

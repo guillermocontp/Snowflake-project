@@ -3,6 +3,7 @@
 target/
 dbt_packages/
 logs/
+f1_dashboard_env/
 
 # Environment variables file
 .env
